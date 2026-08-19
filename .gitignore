@@ -1,0 +1,42 @@
+# ── Large generated data (too big for git, regenerate with scripts) ───────────
+ml/data/processed/sensor_timeseries.csv
+ml/data/processed/fault_events.csv
+ml/data/graphs/graph_dataset.pt
+ml/data/graphs/graph_dataset.npz
+
+# ── Raw fetched data (re-fetch anytime with fetch_weather.py) ─────────────────
+ml/data/raw/
+
+# ── Trained model weights (large binary — share via Google Drive / HuggingFace)
+ml/models/*.pt
+ml/models/*.pkl
+ml/models/*.h5
+
+# ── Python cache ───────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+
+# ── Virtual environments ───────────────────────────────────────────────────────
+venv/
+.venv/
+env/
+
+# ── Jupyter checkpoints ────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+
+# ── OS junk ────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Backend secrets ────────────────────────────────────────────────────────────
+backend/.env
+*.env
+
+# ── Node (frontend — your friend's work) ──────────────────────────────────────
+node_modules/
+frontend/dist/
+frontend/.env
+
+# ── Logs ───────────────────────────────────────────────────────────────────────
+*.log
