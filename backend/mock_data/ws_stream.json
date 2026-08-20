@@ -1,0 +1,10 @@
+[
+  { "type": "heartbeat", "uptime_sec": 0 },
+  { "type": "sensor_reading", "data": { "section_id": 1, "timestamp": "2026-08-19T18:00:01Z", "voltage_pu": 1.003, "current_A": 182.4, "temp_C": 54.2, "thd_pct": 3.9,  "power_factor": 0.921, "anomaly_score": 0.28 } },
+  { "type": "sensor_reading", "data": { "section_id": 2, "timestamp": "2026-08-19T18:00:02Z", "voltage_pu": 0.998, "current_A": 178.1, "temp_C": 53.8, "thd_pct": 4.1,  "power_factor": 0.918, "anomaly_score": 0.31 } },
+  { "type": "sensor_reading", "data": { "section_id": 3, "timestamp": "2026-08-19T18:00:03Z", "voltage_pu": 0.612, "current_A": 387.2, "temp_C": 71.8, "thd_pct": 18.2, "power_factor": 0.712, "anomaly_score": 4.82 } },
+  { "type": "sensor_reading", "data": { "section_id": 4, "timestamp": "2026-08-19T18:00:04Z", "voltage_pu": 0.941, "current_A": 210.3, "temp_C": 61.4, "thd_pct": 7.8,  "power_factor": 0.874, "anomaly_score": 1.42 } },
+  { "type": "sensor_reading", "data": { "section_id": 5, "timestamp": "2026-08-19T18:00:05Z", "voltage_pu": 1.001, "current_A": 175.6, "temp_C": 52.9, "thd_pct": 3.7,  "power_factor": 0.924, "anomaly_score": 0.22 } },
+  { "type": "heartbeat", "uptime_sec": 5 },
+  { "type": "fault_alert", "data": { "section_id": 3, "fault_type": "vegetation_contact", "confidence": 0.942, "candidates": [{"type":"vegetation_contact","probability":0.942},{"type":"conductor_damage","probability":0.038},{"type":"grounding_fault","probability":0.012},{"type":"transformer_overload","probability":0.005},{"type":"illegal_tap","probability":0.003}], "triggered_at": "2026-08-19T18:00:06Z" } }
+]

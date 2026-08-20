@@ -1,0 +1,35 @@
+{
+  "section_id": 3,
+  "fault_type": "vegetation_contact",
+  "top_reasons": [
+    {
+      "feature":      "Voltage Drop %",
+      "feature_key":  "voltage_drop_pct",
+      "contribution": 0.82,
+      "value":        38.9,
+      "direction":    "increase_risk"
+    },
+    {
+      "feature":      "Total Harmonic Distortion %",
+      "feature_key":  "thd_pct",
+      "contribution": 0.64,
+      "value":        18.2,
+      "direction":    "increase_risk"
+    },
+    {
+      "feature":      "Temperature Delta °C",
+      "feature_key":  "temp_delta",
+      "contribution": 0.41,
+      "value":        17.0,
+      "direction":    "increase_risk"
+    },
+    {
+      "feature":      "Wind Speed km/h",
+      "feature_key":  "wind_speed_kmh",
+      "contribution": 0.28,
+      "value":        24.0,
+      "direction":    "decrease_risk"
+    }
+  ],
+  "summary": "High voltage drop and THD indicate insulation failure likely caused by vegetation contact on overhead line."
+}

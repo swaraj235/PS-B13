@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-08-19T18:00:00Z",
+  "sections": [
+    { "id": 1, "fault_probability": 0.123, "status": "normal" },
+    { "id": 2, "fault_probability": 0.087, "status": "normal" },
+    { "id": 3, "fault_probability": 0.942, "status": "critical" },
+    { "id": 4, "fault_probability": 0.521, "status": "warning" },
+    { "id": 5, "fault_probability": 0.064, "status": "normal" }
+  ]
+}
