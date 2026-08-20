@@ -1,0 +1,162 @@
+{
+  "num_graphs": 52698,
+  "num_nodes": 5,
+  "window_minutes": 30,
+  "num_node_features": 11,
+  "node_feature_names": [
+    "voltage_pu",
+    "current_A",
+    "temp_C",
+    "thd_pct",
+    "power_factor",
+    "rain_mm",
+    "lightning_risk",
+    "vegetation_risk",
+    "load_factor",
+    "hour_sin",
+    "hour_cos"
+  ],
+  "edge_feature_names": [
+    "impedance_ohm",
+    "distance_km",
+    "line_age_years"
+  ],
+  "fault_type_classes": [
+    "normal",
+    "conductor_damage",
+    "transformer_overload",
+    "vegetation_contact",
+    "illegal_tap",
+    "grounding_fault"
+  ],
+  "fault2idx": {
+    "normal": 0,
+    "conductor_damage": 1,
+    "transformer_overload": 2,
+    "vegetation_contact": 3,
+    "illegal_tap": 4,
+    "grounding_fault": 5
+  },
+  "edge_index": [
+    [
+      0,
+      1
+    ],
+    [
+      1,
+      0
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      2,
+      1
+    ],
+    [
+      2,
+      3
+    ],
+    [
+      3,
+      2
+    ],
+    [
+      3,
+      4
+    ],
+    [
+      4,
+      3
+    ]
+  ],
+  "edge_attr": [
+    [
+      0.32,
+      2.1,
+      12.0
+    ],
+    [
+      0.32,
+      2.1,
+      12.0
+    ],
+    [
+      0.41,
+      2.7,
+      15.0
+    ],
+    [
+      0.41,
+      2.7,
+      15.0
+    ],
+    [
+      0.38,
+      2.4,
+      18.0
+    ],
+    [
+      0.38,
+      2.4,
+      18.0
+    ],
+    [
+      0.45,
+      3.0,
+      22.0
+    ],
+    [
+      0.45,
+      3.0,
+      22.0
+    ]
+  ],
+  "scaler_stats": {
+    "voltage_pu": {
+      "min": 0.31376,
+      "max": 1.39665
+    },
+    "current_A": {
+      "min": 60.518,
+      "max": 808.987
+    },
+    "temp_C": {
+      "min": 40.12,
+      "max": 94.54
+    },
+    "thd_pct": {
+      "min": 2.33,
+      "max": 19.059
+    },
+    "power_factor": {
+      "min": 0.6544,
+      "max": 0.9801
+    },
+    "rain_mm": {
+      "min": 0.0,
+      "max": 14.2
+    },
+    "lightning_risk": {
+      "min": 0.0052,
+      "max": 0.4972
+    },
+    "vegetation_risk": {
+      "min": 0.066,
+      "max": 0.617
+    },
+    "load_factor": {
+      "min": 0.65,
+      "max": 1.35
+    },
+    "hour_sin": {
+      "min": -1.0,
+      "max": 1.0
+    },
+    "hour_cos": {
+      "min": -1.0,
+      "max": 1.0
+    }
+  }
+}

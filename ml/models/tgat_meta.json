@@ -1,0 +1,10 @@
+{
+  "num_nodes": 5,
+  "window_minutes": 30,
+  "num_node_feat": 11,
+  "num_edge_feat": 3,
+  "num_fault_types": 6,
+  "gat_hidden": 64,
+  "temporal_dim": 32,
+  "best_val_loss": 0.004817
+}

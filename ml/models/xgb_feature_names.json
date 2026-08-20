@@ -1,0 +1,30 @@
+{
+  "features": [
+    "voltage_drop_pct",
+    "current_spike_pct",
+    "temp_delta",
+    "thd_pct_mean",
+    "pf_drop",
+    "rain_mm_mean",
+    "wind_mean_kmh",
+    "humidity_mean_pct",
+    "lightning_risk_mean",
+    "vegetation_risk_mean",
+    "duration_min",
+    "section_id"
+  ],
+  "fault_types": [
+    "conductor_damage",
+    "transformer_overload",
+    "vegetation_contact",
+    "illegal_tap",
+    "grounding_fault"
+  ],
+  "fault2idx": {
+    "conductor_damage": 0,
+    "transformer_overload": 1,
+    "vegetation_contact": 2,
+    "illegal_tap": 3,
+    "grounding_fault": 4
+  }
+}
