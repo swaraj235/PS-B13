@@ -1,0 +1,13 @@
+{
+  "section_id": 3,
+  "fault_type": "vegetation_contact",
+  "confidence": 0.942,
+  "candidates": [
+    { "type": "vegetation_contact",   "probability": 0.942 },
+    { "type": "conductor_damage",     "probability": 0.038 },
+    { "type": "grounding_fault",      "probability": 0.012 },
+    { "type": "transformer_overload", "probability": 0.005 },
+    { "type": "illegal_tap",          "probability": 0.003 }
+  ],
+  "triggered_at": "2026-08-19T18:02:34Z"
+}
