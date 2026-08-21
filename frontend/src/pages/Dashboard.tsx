@@ -18,8 +18,7 @@ export default function Dashboard() {
   useFaultData()
   useTerraShield()
 
-  const { activeAlert } = useGridStore()
-  const activeSectionId = activeAlert?.section_id ?? 3
+  const { selectedSectionId } = useGridStore()
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -42,7 +41,7 @@ export default function Dashboard() {
 
           {/* Right — Live Data + AI + Restoration */}
           <div className="col-span-2 space-y-4">
-            <SensorTimeSeries sectionId={activeSectionId} />
+            <SensorTimeSeries sectionId={selectedSectionId} />
             <SHAPChart />
             <SwitchingGuide />
           </div>

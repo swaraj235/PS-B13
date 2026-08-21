@@ -53,6 +53,10 @@ interface GridStore {
   _setConnected:   (c: boolean) => void
   _setUptime:      (u: number) => void
 
+  // Section Selection
+  selectedSectionId: number
+  setSelectedSectionId: (id: number) => void
+
   // Demo
   injectFault: (sectionId: number, faultType: FaultTypeKey) => Promise<void>
 }
@@ -72,6 +76,13 @@ export const useGridStore = create<GridStore>((set, get) => ({
   complaints:     [],
   wsConnected:    false,
   wsUptime:       0,
+  selectedSectionId: 3,
+
+  setSelectedSectionId: (id: number) => {
+    set({ selectedSectionId: id })
+    get().loadExplanation(id)
+    get().loadSwitchingGuide(id)
+  },
 
   loadExplanation: async (sectionId) => {
     const data = await api.getExplain(sectionId)
@@ -94,6 +105,9 @@ export const useGridStore = create<GridStore>((set, get) => ({
 
   injectFault: async (sectionId, faultType) => {
     await api.injectFault(sectionId, faultType)
+    set({ selectedSectionId: sectionId })
+    get().loadExplanation(sectionId)
+    get().loadSwitchingGuide(sectionId)
   },
 
   // Internal setters
@@ -112,10 +126,16 @@ export const useGridStore = create<GridStore>((set, get) => ({
     }
   }),
 
-  _addAlert: (a) => set(s => ({
-    activeAlert: a,
-    alerts:      [a, ...s.alerts].slice(0, MAX_ALERTS),
-  })),
+  _addAlert: (a) => set(s => {
+    const newSelected = a.section_id
+    get().loadExplanation(newSelected)
+    get().loadSwitchingGuide(newSelected)
+    return {
+      activeAlert: a,
+      alerts:      [a, ...s.alerts].slice(0, MAX_ALERTS),
+      selectedSectionId: newSelected,
+    }
+  }),
 
   _setConnected: (c) => set({ wsConnected: c }),
   _setUptime:    (u) => set({ wsUptime: u }),

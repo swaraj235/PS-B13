@@ -95,6 +95,5 @@
   border-color: #374151 !important;
 }
 .leaflet-control-attribution {
-  background: rgba(0,0,0,0.5) !important;
-  color: #6B7280 !important;
+  display: none !important;
 }

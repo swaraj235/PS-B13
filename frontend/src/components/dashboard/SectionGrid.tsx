@@ -4,19 +4,22 @@ import { FAULT_TYPES } from '../../lib/constants'
 import type { FaultTypeKey } from '../../types'
 
 export function SectionGrid() {
-  const { sections, activeAlert } = useGridStore()
+  const { sections, activeAlert, selectedSectionId, setSelectedSectionId } = useGridStore()
 
   return (
     <div className="grid grid-cols-5 gap-3">
       {sections.map(sec => {
         const isCritical = sec.status === 'critical'
-        const isWarning  = sec.status === 'warning'
+        const isSelected = sec.id === selectedSectionId
         const color = statusToColor(sec.status)
 
         return (
           <div
             key={sec.id}
-            className={`section-card ${sec.status} ${isCritical ? 'shadow-glow-red' : ''}`}
+            onClick={() => setSelectedSectionId(sec.id)}
+            className={`section-card cursor-pointer transition-all duration-200 select-none ${sec.status} ${
+              isCritical ? 'shadow-glow-red' : ''
+            } ${isSelected ? 'ring-2 ring-electric/80 scale-[1.02] bg-navy-700/80' : 'hover:scale-[1.01] hover:bg-navy-700/50'}`}
           >
             <div className="flex items-center justify-between">
               <span className="text-xs text-gray-400 font-mono">SEC {sec.id}</span>
