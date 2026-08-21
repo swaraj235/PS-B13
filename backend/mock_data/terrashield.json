@@ -1,0 +1,15 @@
+{
+  "towers": [
+    { "id": "T1",  "tfr_ohm": 3.2,  "ert_anomaly": false, "status": "normal",   "lat": 18.502, "lon": 73.802 },
+    { "id": "T2",  "tfr_ohm": 14.7, "ert_anomaly": true,  "status": "warning",  "lat": 18.508, "lon": 73.812 },
+    { "id": "T3",  "tfr_ohm": 31.2, "ert_anomaly": true,  "status": "critical", "lat": 18.515, "lon": 73.822 },
+    { "id": "T4",  "tfr_ohm": 5.8,  "ert_anomaly": false, "status": "normal",   "lat": 18.520, "lon": 73.832 },
+    { "id": "T5",  "tfr_ohm": 7.1,  "ert_anomaly": false, "status": "normal",   "lat": 18.525, "lon": 73.840 },
+    { "id": "T6",  "tfr_ohm": 18.4, "ert_anomaly": true,  "status": "warning",  "lat": 18.530, "lon": 73.848 },
+    { "id": "T7",  "tfr_ohm": 4.3,  "ert_anomaly": false, "status": "normal",   "lat": 18.535, "lon": 73.855 },
+    { "id": "T8",  "tfr_ohm": 6.9,  "ert_anomaly": false, "status": "normal",   "lat": 18.538, "lon": 73.862 },
+    { "id": "T9",  "tfr_ohm": 2.1,  "ert_anomaly": false, "status": "normal",   "lat": 18.541, "lon": 73.870 },
+    { "id": "T10", "tfr_ohm": 9.7,  "ert_anomaly": false, "status": "normal",   "lat": 18.545, "lon": 73.882 }
+  ],
+  "timestamp": "2026-08-19T18:00:00Z"
+}

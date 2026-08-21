@@ -1,42 +1,51 @@
-# ── Large generated data (too big for git, regenerate with scripts) ───────────
+# ── Large generated data ───────────────────────────────────────────
 ml/data/processed/sensor_timeseries.csv
 ml/data/processed/fault_events.csv
 ml/data/graphs/graph_dataset.pt
 ml/data/graphs/graph_dataset.npz
-
-# ── Raw fetched data (re-fetch anytime with fetch_weather.py) ─────────────────
 ml/data/raw/
+ml/data/
 
-# ── Trained model weights (large binary — share via Google Drive / HuggingFace)
+# ── Trained model weights & binaries ─────────────────────────────
 ml/models/*.pt
 ml/models/*.pkl
 ml/models/*.h5
 
-# ── Python cache ───────────────────────────────────────────────────────────────
+# ── Python / Cache ────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
 *.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
 
-# ── Virtual environments ───────────────────────────────────────────────────────
+# ── Virtual environments ──────────────────────────────────────────
 venv/
 .venv/
 env/
+backend/venv/
+.env.local
 
-# ── Jupyter checkpoints ────────────────────────────────────────────────────────
-.ipynb_checkpoints/
-
-# ── OS junk ────────────────────────────────────────────────────────────────────
-.DS_Store
-Thumbs.db
-
-# ── Backend secrets ────────────────────────────────────────────────────────────
+# ── Backend secrets & Env ─────────────────────────────────────────
 backend/.env
 *.env
-
-# ── Node (frontend — your friend's work) ──────────────────────────────────────
-node_modules/
-frontend/dist/
 frontend/.env
 
-# ── Logs ───────────────────────────────────────────────────────────────────────
+# ── Node / Frontend ───────────────────────────────────────────────
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+*.tsbuildinfo
+
+# ── OS & IDE junk ─────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
 *.log
+.idea/
+.vscode/
+*.swp
