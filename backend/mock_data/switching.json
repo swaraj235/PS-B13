@@ -1,0 +1,29 @@
+{
+  "fault_section_id": 3,
+  "total_steps": 3,
+  "steps": [
+    {
+      "step_number": 1,
+      "action": "Open isolator S3-A at substation bus",
+      "switch_id": "S3-A",
+      "safety_check": "Confirm no back-feed from DG set. Verify phase rotation.",
+      "restores": []
+    },
+    {
+      "step_number": 2,
+      "action": "Transfer Vadgaon load via tie switch S4-B",
+      "switch_id": "S4-B",
+      "safety_check": "Check thermal rating of S4-B before energising. Max load 120A.",
+      "restores": ["Vadgaon"]
+    },
+    {
+      "step_number": 3,
+      "action": "Close feeder tie S5-T to restore Pirangut and Bavdhan",
+      "switch_id": "S5-T",
+      "safety_check": "Ensure fault on S3 is cleared before closing S5-T. Check earth continuity.",
+      "restores": ["Pirangut", "Bavdhan"]
+    }
+  ],
+  "affected_villages": ["Vadgaon", "Pirangut", "Bavdhan"],
+  "estimated_restore_time_min": 25
+}

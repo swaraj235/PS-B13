@@ -1,0 +1,30 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "LineString", "coordinates": [[73.800, 18.500], [73.820, 18.515]] },
+      "properties": { "section_id": 1, "fault_probability": 0.123, "status": "normal",   "village_names": ["Kothrud", "Warje"] }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "LineString", "coordinates": [[73.820, 18.515], [73.840, 18.525]] },
+      "properties": { "section_id": 2, "fault_probability": 0.087, "status": "normal",   "village_names": ["Paud", "Bhugaon"] }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "LineString", "coordinates": [[73.840, 18.525], [73.860, 18.535]] },
+      "properties": { "section_id": 3, "fault_probability": 0.942, "status": "critical", "village_names": ["Vadgaon", "Pirangut", "Bavdhan"] }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "LineString", "coordinates": [[73.860, 18.535], [73.880, 18.542]] },
+      "properties": { "section_id": 4, "fault_probability": 0.521, "status": "warning",  "village_names": ["Mulshi", "Lavad"] }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "LineString", "coordinates": [[73.880, 18.542], [73.900, 18.548]] },
+      "properties": { "section_id": 5, "fault_probability": 0.064, "status": "normal",   "village_names": ["Tamhini", "Donaje"] }
+    }
+  ]
+}

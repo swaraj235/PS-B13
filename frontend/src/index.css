@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+  
+  html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background-color: #0A0F1E;
+    color: #F9FAFB;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: #111827; }
+  ::-webkit-scrollbar-thumb { background: #374151; border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: #00D4FF; }
+}
+
+@layer components {
+  .card {
+    @apply bg-navy-700 border border-white/5 rounded-xl p-4 shadow-glass;
+    backdrop-filter: blur(8px);
+  }
+
+  .card-header {
+    @apply text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3 flex items-center gap-2;
+  }
+
+  .status-badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold font-mono;
+  }
+
+  .status-badge.normal   { @apply bg-fault-normal/10  text-fault-normal  border border-fault-normal/20; }
+  .status-badge.warning  { @apply bg-fault-warning/10 text-fault-warning border border-fault-warning/20; }
+  .status-badge.critical { @apply bg-fault-critical/10 text-fault-critical border border-fault-critical/20 animate-pulse; }
+
+  .btn-primary {
+    @apply px-4 py-2 bg-electric text-navy-900 font-semibold rounded-lg
+           hover:bg-electric-dim transition-all duration-200 text-sm
+           hover:shadow-glow-blue active:scale-95;
+  }
+
+  .btn-danger {
+    @apply px-4 py-2 border border-fault-critical/50 text-fault-critical rounded-lg
+           hover:bg-fault-critical/10 transition-all duration-200 text-sm
+           hover:shadow-glow-red active:scale-95 font-semibold;
+  }
+
+  .btn-ghost {
+    @apply px-4 py-2 text-gray-400 hover:text-white rounded-lg
+           hover:bg-white/5 transition-all duration-200 text-sm;
+  }
+
+  .nav-item {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
+           text-gray-400 hover:text-white hover:bg-white/5
+           transition-all duration-200 cursor-pointer;
+  }
+
+  .nav-item.active {
+    @apply text-electric bg-electric/10 border border-electric/20;
+  }
+
+  .metric-card {
+    @apply card flex flex-col gap-1;
+  }
+
+  .section-card {
+    @apply card flex flex-col gap-2 border-l-2 transition-all duration-300;
+  }
+
+  .section-card.normal   { border-left-color: #22C55E; }
+  .section-card.warning  { border-left-color: #F59E0B; }
+  .section-card.critical { border-left-color: #EF4444; @apply animate-glow-red; }
+}
+
+/* Leaflet dark overrides */
+.leaflet-container {
+  background: #0D1320 !important;
+  font-family: 'Inter', sans-serif;
+}
+.leaflet-tile-pane { filter: brightness(0.7) saturate(0.5) hue-rotate(200deg); }
+.leaflet-control-zoom a {
+  background: #111827 !important;
+  color: #9CA3AF !important;
+  border-color: #374151 !important;
+}
+.leaflet-control-attribution {
+  background: rgba(0,0,0,0.5) !important;
+  color: #6B7280 !important;
+}

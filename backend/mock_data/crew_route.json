@@ -1,0 +1,24 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [73.780, 18.490],
+          [73.800, 18.500],
+          [73.820, 18.515],
+          [73.840, 18.525],
+          [73.850, 18.530]
+        ]
+      },
+      "properties": {
+        "type": "crew_route",
+        "section_id": 3,
+        "crew_id": "CREW-7",
+        "estimated_minutes": 12
+      }
+    }
+  ]
+}
