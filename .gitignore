@@ -1,17 +1,25 @@
-# ── Large generated data ───────────────────────────────────────────
+# ── Large Generated Datasets ───────────────────────────────────────
 ml/data/processed/sensor_timeseries.csv
 ml/data/processed/fault_events.csv
 ml/data/graphs/graph_dataset.pt
 ml/data/graphs/graph_dataset.npz
 ml/data/raw/
-ml/data/
+ml/data/*.csv
 
-# ── Trained model weights & binaries ─────────────────────────────
+# ── Trained Model Weights & Binaries ─────────────────────────────
+# Note: Keep lightweight metadata files if needed, ignore heavy weights
 ml/models/*.pt
 ml/models/*.pkl
 ml/models/*.h5
+ml/models/*.onnx
 
-# ── Python / Cache ────────────────────────────────────────────────
+# ── Database & SQLite Persistent Files ────────────────────────────
+backend/data/*.db
+backend/data/*.sqlite
+*.db
+*.sqlite3
+
+# ── Python / Cache / Bytecode ─────────────────────────────────────
 __pycache__/
 *.py[cod]
 *.pyo
@@ -22,30 +30,34 @@ dist/
 build/
 *.egg
 .eggs/
+.pytest_cache/
 
-# ── Virtual environments ──────────────────────────────────────────
+# ── Virtual Environments ──────────────────────────────────────────
 venv/
 .venv/
 env/
 backend/venv/
 .env.local
 
-# ── Backend secrets & Env ─────────────────────────────────────────
+# ── Backend Secrets & Environment Files ───────────────────────────
 backend/.env
-*.env
 frontend/.env
+*.env
 
-# ── Node / Frontend ───────────────────────────────────────────────
+# ── Node / Frontend Dependencies & Build ──────────────────────────
 node_modules/
 frontend/node_modules/
 frontend/dist/
 frontend/.vite/
 *.tsbuildinfo
 
-# ── OS & IDE junk ─────────────────────────────────────────────────
+# ── OS & IDE Artifacts ────────────────────────────────────────────
 .DS_Store
 Thumbs.db
 *.log
 .idea/
 .vscode/
 *.swp
+*.swo
+.project
+.settings/
