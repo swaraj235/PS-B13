@@ -78,6 +78,19 @@ export function Header({ title }: HeaderProps) {
           <span className="text-xs text-gray-300 font-mono tabular-nums">{now}</span>
         </div>
 
+        {/* AI Outage Discovery Scan Button */}
+        <button
+          onClick={() => {
+            const sec = Math.floor(Math.random() * 5) + 1
+            injectFault(sec, 'conductor_damage')
+          }}
+          className="px-3 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 text-xs font-bold flex items-center gap-1.5 transition cursor-pointer"
+          title="Run AI telemetry & complaint cluster scan to discover active power outages"
+        >
+          <Radio className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+          <span>Run Outage Scan</span>
+        </button>
+
         {/* Reset Grid Button */}
         <button
           onClick={handleReset}

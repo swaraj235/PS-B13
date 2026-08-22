@@ -44,12 +44,13 @@ export const SECTION_COORDINATES: Record<number, [number, number][]> = {
 export const API_BASE = (import.meta as any).env?.VITE_API_URL ?? 'http://localhost:8000'
 export const WS_BASE  = (import.meta as any).env?.VITE_WS_URL  ?? 'ws://localhost:8000'
 
-export const SECTION_NAMES: Record<number, { title: string; area: string; desc: string }> = {
-  1: { title: 'Zone 1 (Kothrud)', area: 'Kothrud & Karve Nagar', desc: '11kV Feeder Line — Kothrud Substation' },
-  2: { title: 'Zone 2 (Paud Road)', area: 'Paud Rd & Bavdhan', desc: '11kV Feeder Line — Paud Branch Sub' },
-  3: { title: 'Zone 3 (Kondhwa)', area: 'Kondhwa, Undri & NIBM', desc: '22/11kV Primary Feeder — Kondhwa Sub' },
-  4: { title: 'Zone 4 (Hadapsar)', area: 'Hadapsar & Magarpatta', desc: '22kV Industrial Line — Hadapsar Sub' },
-  5: { title: 'Zone 5 (Swargate)', area: 'Swargate & Camp Market', desc: '11kV Central Core — Swargate Substation' },
+// ── Hierarchy: Substation Zone & Feeder Line Sections ──────────────────────────
+export const SECTION_NAMES: Record<number, { title: string; area: string; desc: string; tower: string; lat: number; lon: number; dist_km: number }> = {
+  1: { title: 'Feeder Section 1', area: 'Kothrud Substation Bus (0 - 1.2 km)', desc: '11kV Feeder Line — Substation Outlet', tower: 'Tower #T1-04', lat: 18.5074, lon: 73.8077, dist_km: 1.15 },
+  2: { title: 'Feeder Section 2', area: 'Paud Branch Trunk (1.2 - 2.8 km)', desc: '11kV Feeder Line — Paud Branch Sub', tower: 'Tower #T2-06', lat: 18.5158, lon: 73.8130, dist_km: 2.12 },
+  3: { title: 'Feeder Section 3', area: 'Kondhwa Commercial Spur (2.8 - 4.5 km)', desc: '22/11kV Primary Feeder — Kondhwa Sub', tower: 'Tower #T3-09', lat: 18.4722, lon: 73.8860, dist_km: 3.45 },
+  4: { title: 'Feeder Section 4', area: 'Hadapsar Industrial Spur (4.5 - 6.2 km)', desc: '22kV Industrial Line — Hadapsar Sub', tower: 'Tower #T4-12', lat: 18.5089, lon: 73.9259, dist_km: 5.10 },
+  5: { title: 'Feeder Section 5', area: 'Swargate Core Tail (6.2 - 8.0 km)', desc: '11kV Central Core — Swargate Substation', tower: 'Tower #T5-03', lat: 18.5018, lon: 73.8586, dist_km: 6.85 },
 }
 
 export const SECTION_VILLAGES: Record<number, string[]> = {

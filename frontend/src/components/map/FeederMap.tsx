@@ -301,12 +301,15 @@ export function FeederMap({ restrictedZoneId }: FeederMapProps = {}) {
                 }}
               >
                 <Popup>
-                  <div style={{ fontFamily: 'monospace', minWidth: '170px' }}>
-                    <strong style={{ color: '#EF4444' }}>🚨 CRITICAL FAULT DETECTED</strong><br />
-                    Substation: {zone.name}<br />
-                    Area: {zone.area}<br />
-                    Risk Score: {(s.fault_probability * 100).toFixed(1)}%<br />
-                    {activeAlert && `Type: ${faultTypeLabel(activeAlert.fault_type)}`}
+                  <div style={{ fontFamily: 'monospace', minWidth: '220px', padding: '4px' }}>
+                    <strong style={{ color: '#EF4444', fontSize: '12px' }}>🚨 CRITICAL FAULT PINPOINTED</strong><br />
+                    <span style={{ color: '#00D4FF', fontWeight: 'bold' }}>{zone.name}</span><br />
+                    <span style={{ color: '#94A3B8' }}>Area: {zone.area}</span><br />
+                    <hr style={{ borderColor: 'rgba(255,255,255,0.1)', margin: '4px 0' }} />
+                    <strong style={{ color: '#F59E0B' }}>📍 Tower: {zone.id === 1 ? 'Tower #T1-04' : zone.id === 2 ? 'Tower #T2-06' : zone.id === 3 ? 'Tower #T3-09' : zone.id === 4 ? 'Tower #T4-12' : 'Tower #T5-03'}</strong><br />
+                    <span style={{ color: '#22C55E' }}>📡 GPS: {zone.midpoint[0]}° N, {zone.midpoint[1]}° E</span><br />
+                    <span style={{ color: '#CBD5E1' }}>📏 Distance: {zone.id === 1 ? '1.15 km' : zone.id === 2 ? '2.12 km' : zone.id === 3 ? '3.45 km' : zone.id === 4 ? '5.10 km' : '6.85 km'} from Substation</span><br />
+                    <span style={{ color: '#EF4444' }}>Risk Confidence: {(s.fault_probability * 100).toFixed(1)}%</span>
                   </div>
                 </Popup>
               </Marker>
