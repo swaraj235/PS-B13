@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { MapContainer, TileLayer, Polyline, Marker, Popup, Tooltip, useMap } from 'react-leaflet'
 import L from 'leaflet'
-import { MapPin, Navigation, Info } from 'lucide-react'
+import { Layers, Zap } from 'lucide-react'
 import { useGridStore } from '../../store/gridStore'
 import { STATUS_COLORS } from '../../lib/constants'
 import { faultTypeLabel } from '../../lib/utils'
@@ -15,29 +15,136 @@ L.Icon.Default.mergeOptions({
   shadowUrl:     'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
 })
 
-// ── Static feeder topology (IEEE 33-Bus academic demo, Pune area) ────────────
-// NOTE: These 5 sections are a *synthetic* representation used for the demo.
-// They do NOT map to real MSEDCL Pune distribution lines.
-const SECTION_LINES: [number, number][][] = [
-  [[18.500, 73.800], [18.515, 73.820]],
-  [[18.515, 73.820], [18.525, 73.840]],
-  [[18.525, 73.840], [18.535, 73.860]],
-  [[18.535, 73.860], [18.542, 73.880]],
-  [[18.542, 73.880], [18.548, 73.900]],
-]
+// ── Substation Zone Definitions for Pune Circle ────────────────────────────────
+export interface SubstationZone {
+  id: string
+  name: string
+  area: string
+  voltage: string
+  consumers: string
+  center: [number, number]
+  zoom: number
+  feederLines: [number, number][][]
+  midpoints: [number, number][]
+}
 
-const SECTION_MIDPOINTS: [number, number][] = [
-  [18.507, 73.810],
-  [18.520, 73.830],
-  [18.530, 73.850],
-  [18.538, 73.870],
-  [18.545, 73.890],
-]
-
-const CREW_ROUTE: [number, number][] = [
-  [18.490, 73.780], [18.500, 73.800],
-  [18.515, 73.820], [18.525, 73.840], [18.530, 73.850],
-]
+export const PUNE_SUBSTATIONS: Record<string, SubstationZone> = {
+  all_pune: {
+    id: 'all_pune',
+    name: 'IEEE 33-Bus Benchmark (Pune Circle Overview)',
+    area: 'Pune Metropolitan Region',
+    voltage: '33kV / 11kV',
+    consumers: '1,20,000+',
+    center: [18.524, 73.850],
+    zoom: 12,
+    feederLines: [
+      [[18.500, 73.800], [18.515, 73.820]],
+      [[18.515, 73.820], [18.525, 73.840]],
+      [[18.525, 73.840], [18.535, 73.860]],
+      [[18.535, 73.860], [18.542, 73.880]],
+      [[18.542, 73.880], [18.548, 73.900]],
+    ],
+    midpoints: [
+      [18.507, 73.810],
+      [18.520, 73.830],
+      [18.530, 73.850],
+      [18.538, 73.870],
+      [18.545, 73.890],
+    ]
+  },
+  kondhwa: {
+    id: 'kondhwa',
+    name: 'Kondhwa 22/11kV Substation',
+    area: 'Kondhwa Budruk, Khurd, Undri, NIBM & Pisoli',
+    voltage: '22kV / 11kV',
+    consumers: '48,500',
+    center: [18.468, 73.890],
+    zoom: 14,
+    feederLines: [
+      [[18.464, 73.885], [18.472, 73.892]], // Sec 1: Kondhwa Budruk Main Line
+      [[18.472, 73.892], [18.478, 73.899]], // Sec 2: NIBM Rd Feeder
+      [[18.478, 73.899], [18.465, 73.908]], // Sec 3: Undri-Pisoli Line
+      [[18.465, 73.908], [18.455, 73.918]], // Sec 4: Katraj-Kondhwa Bypass
+      [[18.455, 73.918], [18.448, 73.928]], // Sec 5: Yeolewadi / Saswad Link
+    ],
+    midpoints: [
+      [18.468, 73.888],
+      [18.475, 73.895],
+      [18.471, 73.903],
+      [18.460, 73.913],
+      [18.451, 73.923],
+    ]
+  },
+  kothrud: {
+    id: 'kothrud',
+    name: 'Kothrud 11kV Substation',
+    area: 'Kothrud, Warje, Karve Nagar & Erandwane',
+    voltage: '11kV',
+    consumers: '62,000',
+    center: [18.507, 73.805],
+    zoom: 14,
+    feederLines: [
+      [[18.501, 73.800], [18.508, 73.810]], // Sec 1: Karve Rd Feeder
+      [[18.508, 73.810], [18.514, 73.818]], // Sec 2: Paud Rd / Ideal Colony
+      [[18.514, 73.818], [18.495, 73.812]], // Sec 3: Warje Malwadi Line
+      [[18.495, 73.812], [18.486, 73.820]], // Sec 4: Karve Nagar Feeder
+      [[18.486, 73.820], [18.478, 73.828]], // Sec 5: Cummins College Link
+    ],
+    midpoints: [
+      [18.504, 73.805],
+      [18.511, 73.814],
+      [18.504, 73.815],
+      [18.490, 73.816],
+      [18.482, 73.824],
+    ]
+  },
+  hadapsar: {
+    id: 'hadapsar',
+    name: 'Hadapsar 22kV Substation',
+    area: 'Hadapsar, Magarpatta, Amanora & Mundhwa',
+    voltage: '22kV',
+    consumers: '74,000',
+    center: [18.508, 73.926],
+    zoom: 14,
+    feederLines: [
+      [[18.502, 73.920], [18.512, 73.928]], // Sec 1: Solapur Rd Feeder
+      [[18.512, 73.928], [18.520, 73.935]], // Sec 2: Magarpatta Cybercity
+      [[18.520, 73.935], [18.528, 73.945]], // Sec 3: Amanora Town Feeder
+      [[18.528, 73.945], [18.535, 73.952]], // Sec 4: Mundhwa Industrial Feeder
+      [[18.535, 73.952], [18.542, 73.960]], // Sec 5: Keshavnagar Feeder
+    ],
+    midpoints: [
+      [18.507, 73.924],
+      [18.516, 73.931],
+      [18.524, 73.940],
+      [18.531, 73.948],
+      [18.538, 73.956],
+    ]
+  },
+  swargate: {
+    id: 'swargate',
+    name: 'Swargate / Camp Substation',
+    area: 'Swargate, Camp, Parvati, Sarasbaug & Shivajinagar',
+    voltage: '11kV',
+    consumers: '58,000',
+    center: [18.501, 73.858],
+    zoom: 14,
+    feederLines: [
+      [[18.498, 73.855], [18.505, 73.865]], // Sec 1: Shankarsheth Rd Feeder
+      [[18.505, 73.865], [18.515, 73.875]], // Sec 2: MG Road Camp Line
+      [[18.515, 73.875], [18.525, 73.865]], // Sec 3: Pune Station Feeder
+      [[18.525, 73.865], [18.530, 73.852]], // Sec 4: Shivajinagar Line
+      [[18.530, 73.852], [18.490, 73.848]], // Sec 5: Parvati Hill Feeder
+    ],
+    midpoints: [
+      [18.501, 73.860],
+      [18.510, 73.870],
+      [18.520, 73.870],
+      [18.527, 73.858],
+      [18.510, 73.850],
+    ]
+  }
+}
 
 // ── Icon helpers ─────────────────────────────────────────────────────────────
 function faultIcon(color: string) {
@@ -47,20 +154,7 @@ function faultIcon(color: string) {
   })
 }
 
-function gpsIcon() {
-  return L.divIcon({
-    html: `
-      <div style="position:relative;width:20px;height:20px">
-        <div style="width:20px;height:20px;border-radius:50%;background:#00D4FF;border:3px solid white;box-shadow:0 0 12px #00D4FF;opacity:0.9"></div>
-        <div style="position:absolute;inset:-6px;border-radius:50%;border:2px solid rgba(0,212,255,0.4);animation:ping 1.5s ease-out infinite"></div>
-      </div>
-      <style>@keyframes ping{0%{transform:scale(1);opacity:0.8}100%{transform:scale(2.2);opacity:0}}</style>
-    `,
-    className: '', iconSize: [20, 20], iconAnchor: [10, 10],
-  })
-}
-
-// ── Helper to smoothly fly the map to new centre ─────────────────────────────
+// ── Map controller ────────────────────────────────────────────────────────────
 function MapController({ center, zoom }: { center: [number, number]; zoom: number }) {
   const map = useMap()
   const prevCenter = useRef<[number, number]>([0, 0])
@@ -77,102 +171,66 @@ function MapController({ center, zoom }: { center: [number, number]; zoom: numbe
 export function FeederMap() {
   const { sections, activeAlert, selectedSectionId, setSelectedSectionId } = useGridStore()
 
-  const [mapCenter, setMapCenter] = useState<[number, number]>([18.524, 73.850])
-  const [mapZoom,   setMapZoom]   = useState(12)
-  const [userPos,   setUserPos]   = useState<[number, number] | null>(null)
-  const [gpsError,  setGpsError]  = useState<string | null>(null)
-  const [tracking,  setTracking]  = useState(false)
-  const watchId = useRef<number | null>(null)
+  const [selectedSubstationKey, setSelectedSubstationKey] = useState<string>('kondhwa')
+  const currentZone = PUNE_SUBSTATIONS[selectedSubstationKey] || PUNE_SUBSTATIONS.all_pune
+
+  const [mapCenter, setMapCenter] = useState<[number, number]>(currentZone.center)
+  const [mapZoom,   setMapZoom]   = useState(currentZone.zoom)
+
+  // Update map position when substation dropdown changes
+  const handleSubstationChange = (key: string) => {
+    setSelectedSubstationKey(key)
+    const zone = PUNE_SUBSTATIONS[key]
+    if (zone) {
+      setMapCenter(zone.center)
+      setMapZoom(zone.zoom)
+    }
+  }
 
   const sectionStatus: Record<number, SectionStatus> = {}
   sections.forEach(s => { sectionStatus[s.id] = s.status })
 
-  // Start / stop live GPS watch
-  const toggleGPS = () => {
-    if (tracking) {
-      // Stop
-      if (watchId.current !== null) navigator.geolocation.clearWatch(watchId.current)
-      setTracking(false)
-      setGpsError(null)
-      return
-    }
-    if (!navigator.geolocation) {
-      setGpsError('Geolocation not supported by this browser')
-      return
-    }
-    setGpsError(null)
-    setTracking(true)
-    watchId.current = navigator.geolocation.watchPosition(
-      pos => {
-        const coords: [number, number] = [pos.coords.latitude, pos.coords.longitude]
-        setUserPos(coords)
-        setMapCenter(coords)
-        setMapZoom(15)
-      },
-      err => {
-        setGpsError(`GPS error: ${err.message}`)
-        setTracking(false)
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 2000 }
-    )
-  }
-
-  // Cleanup on unmount
-  useEffect(() => () => {
-    if (watchId.current !== null) navigator.geolocation.clearWatch(watchId.current)
-  }, [])
-
   return (
     <div className="card flex flex-col gap-4">
-      {/* Header */}
+      {/* Header with Substation Zone Dropdown */}
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div>
           <div className="card-header mb-0">
             <span className="text-electric">⚡</span>
-            Feeder Map — IEEE 33-Bus Network
+            Feeder Map — Pune Circle GIS
             {activeAlert && (
               <span className="ml-3 px-2.5 py-0.5 rounded-full bg-red-500/20 border border-red-500/40 text-red-400 text-xs font-bold animate-pulse">
                 ⚠ FAULT: SEC {activeAlert.section_id}
               </span>
             )}
           </div>
-          <p className="text-[11px] text-amber-400/80 flex items-center gap-1 mt-0.5">
-            <Info className="w-3 h-3 flex-shrink-0" />
-            Demo topology (IEEE 33-Bus benchmark) — not the real MSEDCL Pune grid
+          <p className="text-[11px] text-gray-400 flex items-center gap-1 mt-0.5 font-medium">
+            <Layers className="w-3 h-3 text-electric" />
+            {currentZone.name} — {currentZone.area} ({currentZone.consumers} consumers)
           </p>
         </div>
 
-        {/* GPS button */}
-        <button
-          onClick={toggleGPS}
-          className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-bold transition-all ${
-            tracking
-              ? 'bg-electric/20 border-electric/50 text-electric'
-              : 'bg-navy-700/60 border-white/15 text-gray-300 hover:text-electric hover:border-electric/40'
-          }`}
-        >
-          {tracking
-            ? <Navigation className="w-3.5 h-3.5 animate-spin" />
-            : <MapPin className="w-3.5 h-3.5" />
-          }
-          {tracking ? 'GPS: Live ●' : 'Enable Live GPS'}
-        </button>
+        {/* Substation Dropdown */}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 bg-[#0a1525] border border-electric/30 rounded-xl px-3 py-1.5">
+            <Zap className="w-3.5 h-3.5 text-electric" />
+            <select
+              value={selectedSubstationKey}
+              onChange={e => handleSubstationChange(e.target.value)}
+              className="bg-transparent text-xs font-bold text-white focus:outline-none cursor-pointer"
+            >
+              {Object.entries(PUNE_SUBSTATIONS).map(([key, zone]) => (
+                <option key={key} value={key} className="bg-[#0a1525] text-white">
+                  📍 {zone.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
       </div>
 
-      {gpsError && (
-        <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
-          ⚠ {gpsError}
-        </p>
-      )}
-
-      {tracking && userPos && (
-        <p className="text-xs text-electric/80 bg-electric/10 border border-electric/20 rounded-lg px-3 py-2">
-          📍 Live GPS — {userPos[0].toFixed(5)}°N, {userPos[1].toFixed(5)}°E (updating automatically)
-        </p>
-      )}
-
-      {/* Map */}
-      <div className="relative rounded-xl overflow-hidden border border-white/10" style={{ height: 300 }}>
+      {/* Map view */}
+      <div className="relative rounded-xl overflow-hidden border border-white/10" style={{ height: 320 }}>
         <MapContainer
           center={mapCenter}
           zoom={mapZoom}
@@ -184,7 +242,7 @@ export function FeederMap() {
           <TileLayer attribution="" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
           {/* Feeder section lines */}
-          {SECTION_LINES.map((coords, idx) => {
+          {currentZone.feederLines.map((coords, idx) => {
             const secId    = idx + 1
             const status   = sectionStatus[secId] ?? 'normal'
             const color    = STATUS_COLORS[status]
@@ -192,7 +250,7 @@ export function FeederMap() {
             const isSel    = secId === selectedSectionId
             return (
               <Polyline
-                key={secId}
+                key={`${selectedSubstationKey}-sec-${secId}`}
                 positions={coords}
                 eventHandlers={{ click: () => setSelectedSectionId(secId) }}
                 pathOptions={{
@@ -211,55 +269,36 @@ export function FeederMap() {
           })}
 
           {/* Critical fault markers */}
-          {sections.filter(s => s.status === 'critical').map(s => (
-            <Marker
-              key={s.id}
-              position={SECTION_MIDPOINTS[s.id - 1]}
-              icon={faultIcon('#EF4444')}
-              eventHandlers={{ click: () => setSelectedSectionId(s.id) }}
-            >
-              <Popup>
-                <div style={{ fontFamily: 'monospace', minWidth: '160px' }}>
-                  <strong style={{ color: '#EF4444' }}>⚠ CRITICAL FAULT</strong><br />
-                  Section: {s.id}<br />
-                  Probability: {(s.fault_probability * 100).toFixed(1)}%<br />
-                  {activeAlert && `Type: ${faultTypeLabel(activeAlert.fault_type)}`}
-                </div>
-              </Popup>
-            </Marker>
-          ))}
-
-          {/* Live GPS pin */}
-          {userPos && (
-            <Marker position={userPos} icon={gpsIcon()}>
-              <Popup>
-                <div style={{ fontFamily: 'monospace' }}>
-                  <strong style={{ color: '#00D4FF' }}>📍 Your Live Location</strong><br />
-                  {userPos[0].toFixed(5)}°N, {userPos[1].toFixed(5)}°E<br />
-                  <span style={{ fontSize: '10px', color: '#9CA3AF' }}>Updating in real time</span>
-                </div>
-              </Popup>
-            </Marker>
-          )}
-
-          {/* Crew dispatch route */}
-          {activeAlert && (
-            <Polyline
-              positions={CREW_ROUTE}
-              pathOptions={{ color: '#00D4FF', weight: 2.5, dashArray: '8 6', opacity: 0.9 }}
-            >
-              <Tooltip>Crew Route → Section {activeAlert.section_id}</Tooltip>
-            </Polyline>
-          )}
+          {sections.filter(s => s.status === 'critical').map(s => {
+            const midpoint = currentZone.midpoints[s.id - 1] || currentZone.center
+            return (
+              <Marker
+                key={`fault-${s.id}`}
+                position={midpoint}
+                icon={faultIcon('#EF4444')}
+                eventHandlers={{ click: () => setSelectedSectionId(s.id) }}
+              >
+                <Popup>
+                  <div style={{ fontFamily: 'monospace', minWidth: '160px' }}>
+                    <strong style={{ color: '#EF4444' }}>⚠ CRITICAL FAULT</strong><br />
+                    Substation: {currentZone.name}<br />
+                    Section: {s.id}<br />
+                    Probability: {(s.fault_probability * 100).toFixed(1)}%<br />
+                    {activeAlert && `Type: ${faultTypeLabel(activeAlert.fault_type)}`}
+                  </div>
+                </Popup>
+              </Marker>
+            )
+          })}
         </MapContainer>
 
         {/* Map legend */}
         <div className="absolute bottom-3 left-3 bg-[#0d1626]/95 border border-white/10 backdrop-blur-sm rounded-xl p-2.5 z-[1000] text-[10px] space-y-1.5">
           {[
-            { color: '#22C55E', label: 'Normal' },
-            { color: '#F59E0B', label: 'Warning' },
-            { color: '#EF4444', label: 'Critical Fault' },
-            { color: '#00D4FF', label: 'Selected / Crew Route', dashed: true },
+            { color: '#22C55E', label: 'Normal Section' },
+            { color: '#F59E0B', label: 'Warning Section' },
+            { color: '#EF4444', label: 'Critical Fault Node' },
+            { color: '#00D4FF', label: 'Selected Feeder Section', dashed: true },
           ].map(({ color, label, dashed }) => (
             <div key={label} className="flex items-center gap-2">
               <div className="w-5 h-0.5 rounded flex-shrink-0"
