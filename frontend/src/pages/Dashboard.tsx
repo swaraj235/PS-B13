@@ -6,10 +6,9 @@ import { SectionGrid }     from '../components/dashboard/SectionGrid'
 import { FeederMap }       from '../components/map/FeederMap'
 import { AlertPanel }      from '../components/dashboard/AlertPanel'
 import { SensorTimeSeries } from '../components/dashboard/SensorTimeSeries'
-import { SHAPChart }       from '../components/analysis/SHAPChart'
 import { SwitchingGuide }  from '../components/restoration/SwitchingGuide'
-import { TerraShieldPanel } from '../components/terrashield/TerraShieldPanel'
-import { ComplaintsFeed }  from '../components/complaints/ComplaintsFeed'
+import { ComplaintsSummaryCard } from '../components/complaints/ComplaintsSummaryCard'
+import { GridHealthOverviewCard } from '../components/dashboard/GridHealthOverviewCard'
 import { useGridStore }    from '../store/gridStore'
 
 export default function Dashboard() {
@@ -20,10 +19,10 @@ export default function Dashboard() {
   const { selectedSectionId } = useGridStore()
 
   return (
-    <div className="flex flex-col h-full overflow-hidden bg-[#080d1a]">
+    <div className="flex flex-col h-full overflow-y-auto bg-[#080d1a]">
       <Header title="Operator Dashboard" />
 
-      <div className="flex-1 overflow-y-auto p-5 space-y-5">
+      <div className="flex-1 p-5 space-y-5">
 
         {/* ── Top: Feeder Section Status Cards ─────────────────── */}
         <section>
@@ -40,18 +39,13 @@ export default function Dashboard() {
             <AlertPanel />
           </div>
 
-          {/* Right Column (6 cols): AI Explanation -> Restoration Plan -> Consumer Complaints */}
+          {/* Right Column (6 cols): Grid Overview -> Restoration Plan -> Consumer Complaints Summary */}
           <div className="lg:col-span-6 flex flex-col gap-5">
-            <SHAPChart />
+            <GridHealthOverviewCard />
             <SwitchingGuide />
-            <ComplaintsFeed />
+            <ComplaintsSummaryCard />
           </div>
 
-        </section>
-
-        {/* ── Bottom: TerraShield Tower Grounding Status ───────── */}
-        <section>
-          <TerraShieldPanel />
         </section>
 
       </div>

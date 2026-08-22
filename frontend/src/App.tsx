@@ -5,6 +5,8 @@ import Dashboard  from './pages/Dashboard'
 import Analytics  from './pages/Analytics'
 import CrewView   from './pages/CrewView'
 import { AuditLogView } from './pages/AuditLogView'
+import { TerraShieldView } from './pages/TerraShieldView'
+import { ComplaintsTriageView } from './pages/ComplaintsTriageView'
 import { Login } from './pages/Login'
 import { Signup } from './pages/Signup'
 import { ConsumerLayout } from './components/layout/ConsumerLayout'
@@ -19,7 +21,7 @@ function AdminLayout() {
   return (
     <div className="flex h-screen overflow-hidden bg-navy-900">
       <Sidebar />
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="flex-1 flex flex-col overflow-y-auto min-w-0 bg-[#080d1a]">
         <Outlet />
       </main>
     </div>
@@ -63,10 +65,12 @@ export default function App() {
             </ProtectedRoute>
           }
         >
-          <Route path="/"          element={<Dashboard />} />
-          <Route path="/audit-logs" element={<AuditLogView />} />
-          <Route path="/analytics" element={<Analytics />} />
-          <Route path="/crew"      element={<CrewView />} />
+          <Route path="/"            element={<Dashboard />} />
+          <Route path="/terrashield" element={<TerraShieldView />} />
+          <Route path="/complaints"  element={<ComplaintsTriageView />} />
+          <Route path="/audit-logs"  element={<AuditLogView />} />
+          <Route path="/analytics"   element={<Analytics />} />
+          <Route path="/crew"        element={<CrewView />} />
         </Route>
       </Routes>
     </BrowserRouter>

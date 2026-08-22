@@ -106,6 +106,27 @@ export const api = {
   updateComplaintStatus:(id: number, status: string): Promise<ComplaintResponse> => patch(`/api/complaints/${id}/status`, { status }),
   endorseComplaint:    (id: number): Promise<{ status: string; id: number; impact_count: number }> => post(`/api/complaints/${id}/endorse`, {}),
   importCSV:           (items: unknown[]): Promise<{ status: string; imported: number }> => post('/api/complaints/import-csv', { items }),
+  importComplaintsCsv: async (file: File): Promise<{ status: string; imported_count: number }> => {
+    const text = await file.text()
+    const lines = text.split('\n').filter(l => l.trim().length > 0)
+    if (lines.length <= 1) return { status: 'empty', imported_count: 0 }
+    
+    const items = []
+    for (let i = 1; i < lines.length; i++) {
+      const parts = lines[i].split(',').map(p => p.trim().replace(/^"|"$/g, ''))
+      if (parts.length >= 2) {
+        items.push({
+          village: parts[0] || 'Pune Feeder',
+          category: parts[1] || 'Power Outage',
+          description: parts[2] || 'Imported via Admin CSV Triage',
+          section_id: Number(parts[3]) || 1,
+        })
+      }
+    }
+    
+    const res = await post('/api/complaints/import-csv', { items })
+    return { status: 'success', imported_count: (res as { imported?: number }).imported ?? items.length }
+  },
   getAuditLogs:        (): Promise<{ audit_logs: import('../types').AuditLog[] }> => get('/api/complaints/audit-logs'),
 
   // Health

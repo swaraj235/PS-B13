@@ -3,6 +3,7 @@ import { FileText, Search, RefreshCw, Download, Filter, ShieldCheck, CheckCircle
 import { api } from '../lib/api'
 import type { AuditLog } from '../types'
 import { formatDate } from '../lib/utils'
+import { generatePdfReport } from '../lib/exportPdf'
 
 export function AuditLogView() {
   const [logs, setLogs] = useState<AuditLog[]>([])
@@ -38,6 +39,29 @@ export function AuditLogView() {
     const matchesAction = selectedActionFilter === 'ALL' || log.action === selectedActionFilter
     return matchesSearch && matchesAction
   })
+
+  const handleExportAuditPdf = () => {
+    if (logs.length === 0) return
+    generatePdfReport({
+      title: 'GridSentinel Immutable Audit Trail Report',
+      subtitle: 'Official MSEDCL System Event & Action History',
+      summaryStats: [
+        { label: 'Total Events Recorded', value: logs.length },
+        { label: 'Complaints Raised', value: logs.filter(l => l.action === 'COMPLAINT_RAISED').length },
+        { label: 'Crews Dispatched', value: logs.filter(l => l.action === 'CREW_DISPATCHED').length },
+        { label: 'Power Restorations', value: logs.filter(l => l.action === 'POWER_RESTORED').length },
+      ],
+      headers: ['Event ID', 'Timestamp', 'Action', 'Ticket Ref', 'Details', 'Operator'],
+      rows: logs.map(l => [
+        `#${l.id}`,
+        formatDate(l.timestamp),
+        l.action,
+        l.complaint_id ? `#${l.complaint_id}` : '—',
+        l.details,
+        l.performed_by
+      ])
+    })
+  }
 
   const handleExportAuditCSV = () => {
     if (logs.length === 0) return
@@ -88,7 +112,7 @@ export function AuditLogView() {
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6 animate-fade-in">
+    <div className="flex-1 overflow-y-auto p-6 max-w-7xl mx-auto space-y-6 w-full animate-fade-in">
       {/* Top Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#0d1626] border border-electric/20 rounded-2xl p-6 shadow-xl">
         <div className="flex items-center gap-3">
@@ -108,7 +132,7 @@ export function AuditLogView() {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <button
             onClick={fetchAuditLogs}
             className="px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 text-xs font-bold flex items-center gap-2 transition cursor-pointer"
@@ -118,11 +142,19 @@ export function AuditLogView() {
           </button>
 
           <button
+            onClick={handleExportAuditPdf}
+            className="px-4 py-2 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 rounded-xl text-xs font-bold flex items-center gap-2 transition cursor-pointer"
+          >
+            <FileText className="w-4 h-4" />
+            Export PDF
+          </button>
+
+          <button
             onClick={handleExportAuditCSV}
-            className="px-4 py-2 rounded-xl bg-electric hover:bg-electric/90 text-[#070d18] text-xs font-bold flex items-center gap-2 shadow-lg shadow-electric/20 transition cursor-pointer"
+            className="px-4 py-2 rounded-xl bg-electric hover:bg-electric/90 text-[#070d18] text-xs font-extrabold flex items-center gap-2 shadow-lg shadow-electric/20 transition cursor-pointer"
           >
             <Download className="w-4 h-4" />
-            Export Audit Report
+            Export CSV
           </button>
         </div>
       </div>

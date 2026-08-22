@@ -109,12 +109,13 @@ export interface ComplaintResponse {
   user_id?:      number;
   email?:        string;
   consumer_name?:string;
+  submitted_by?: string;
   section_id:    number;
   village:       string;
   category?:     string;
   description?:  string;
   image_data?:   string;
-  status:        'pending' | 'in_progress' | 'resolved';
+  status:        'pending' | 'in_progress' | 'resolved' | 'spam';
   submitted_at:  string;
   resolved_at?:  string;
   acknowledged:  boolean;

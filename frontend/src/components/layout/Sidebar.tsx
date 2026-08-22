@@ -1,16 +1,17 @@
 import { NavLink, useNavigate } from 'react-router-dom'
-import { Zap, LayoutDashboard, BarChart3, HardHat, FileText, LogOut, Wifi, WifiOff } from 'lucide-react'
+import { Zap, LayoutDashboard, BarChart3, HardHat, FileText, LogOut, Wifi, WifiOff, Shield, ClipboardList } from 'lucide-react'
 import { useGridStore } from '../../store/gridStore'
 import { useAuthStore } from '../../store/authStore'
 import { formatUptime } from '../../lib/utils'
 
 const navItems = [
-  { to: '/',          icon: LayoutDashboard, label: 'Dashboard',   desc: 'Live grid overview' },
-  { to: '/audit-logs',icon: FileText,        label: 'Audit Logs',  desc: 'System event trail' },
-  { to: '/analytics', icon: BarChart3,       label: 'Analytics',   desc: 'Trends & history' },
-  { to: '/crew',      icon: HardHat,         label: 'Crew View',   desc: 'Field team dispatch' },
+  { to: '/',           icon: LayoutDashboard, label: 'Dashboard',         desc: 'Live grid overview' },
+  { to: '/complaints', icon: ClipboardList,   label: 'Complaints Triage', desc: 'Verify & bulk import' },
+  { to: '/audit-logs', icon: FileText,        label: 'Audit Logs',        desc: 'System event trail' },
+  { to: '/analytics',  icon: BarChart3,       label: 'Analytics',         desc: 'Trends & history' },
+  { to: '/crew',       icon: HardHat,         label: 'Crew View',         desc: 'Field team dispatch' },
+  { to: '/terrashield',icon: Shield,          label: 'TerraShield AI',    desc: 'GNN fault & grounding' },
 ]
-
 
 export function Sidebar() {
   const navigate = useNavigate()
@@ -34,20 +35,20 @@ export function Sidebar() {
       </div>
 
       {/* ── Navigation ─────────────────────────────── */}
-      <nav className="flex-1 px-3 py-5 space-y-1">
+      <nav className="flex-1 px-3 py-5 space-y-1 overflow-y-auto">
         <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest px-3 mb-3">Navigation</p>
         {navItems.map(({ to, icon: Icon, label, desc }) => (
           <NavLink
             key={to}
             to={to}
             end={to === '/'}
-            className={({ isActive }) =>
+            className={({ isActive }: { isActive: boolean }) =>
               `nav-item group ${isActive ? 'active' : ''}`
             }
           >
-            <Icon className="w-5 h-5 flex-shrink-0" />
+            <Icon className="w-5 h-5 flex-shrink-0 text-electric" />
             <div className="flex flex-col leading-tight">
-              <span className="text-sm">{label}</span>
+              <span className="text-sm font-semibold">{label}</span>
               <span className="text-[10px] text-gray-500 group-hover:text-gray-400">{desc}</span>
             </div>
           </NavLink>
