@@ -15,20 +15,79 @@ _start_time = datetime.now(timezone.utc)
 
 
 def _make_sensor(section_id: int, t: int) -> dict:
-    """Generate a realistic live sensor reading."""
-    is_fault = (section_id == ACTIVE_FAULT["section_id"]) and ACTIVE_FAULT.get("active", True)
+    """Generate a realistic live sensor reading for physics-informed inference."""
+    target_sec = ACTIVE_FAULT["section_id"] if ACTIVE_FAULT.get("active", True) else 0
+    is_fault = (section_id == target_sec)
+    is_adjacent = (target_sec > 0 and section_id == (target_sec % 5) + 1)
+
     noise = random.gauss(0, 0.005)
-    base_voltage = 0.61 if is_fault else (1.0 + 0.01 * math.sin(t * 0.1))
+    if is_fault:
+        base_v = 0.61
+        base_i = 387.0
+        base_temp = 71.5
+        base_thd = 18.2
+        base_pf = 0.71
+        base_anom = 4.82
+    elif is_adjacent:
+        base_v = 0.88 + 0.005 * math.sin(t * 0.1)
+        base_i = 245.0
+        base_temp = 62.0
+        base_thd = 8.5
+        base_pf = 0.84
+        base_anom = 2.15
+    else:
+        base_v = 1.00 + 0.008 * math.sin(t * 0.1)
+        base_i = 180.0
+        base_temp = 55.0
+        base_thd = 4.0
+        base_pf = 0.92
+        base_anom = 0.30
+
     return {
         "section_id":    section_id,
         "timestamp":     datetime.now(timezone.utc).isoformat(),
-        "voltage_pu":    round(max(0.0, base_voltage + noise), 4),
-        "current_A":     round((387.0 + random.gauss(0, 5)) if is_fault else (180.0 + random.gauss(0, 10)), 2),
-        "temp_C":        round((72.0 + random.gauss(0, 1)) if is_fault else (55.0 + random.gauss(0, 2)), 2),
-        "thd_pct":       round((18.0 + random.gauss(0, 0.5)) if is_fault else (4.0 + random.gauss(0, 0.3)), 2),
-        "power_factor":  round((0.71 + random.gauss(0, 0.01)) if is_fault else (0.92 + random.gauss(0, 0.01)), 3),
-        "anomaly_score": round((4.82 + random.gauss(0, 0.2)) if is_fault else (0.3 + random.gauss(0, 0.05)), 3),
+        "voltage_pu":    round(max(0.0, base_v + noise), 4),
+        "current_A":     round(max(0.0, base_i + random.gauss(0, 4)), 2),
+        "temp_C":        round(max(0.0, base_temp + random.gauss(0, 0.8)), 2),
+        "thd_pct":       round(max(0.0, base_thd + random.gauss(0, 0.3)), 2),
+        "power_factor":  round(min(1.0, max(0.0, base_pf + random.gauss(0, 0.008))), 3),
+        "anomaly_score": round(max(0.0, base_anom + random.gauss(0, 0.05)), 3),
     }
+
+
+def calculate_live_fault_probability(reading: dict) -> float:
+    """
+    Computes real-time fault risk probability directly from live physical sensor readings:
+    - Voltage drop (pu sag from 1.0 pu)
+    - Current surge (excess Amps above nominal ~180A)
+    - THD (harmonic distortion % above nominal ~4.0%)
+    - Temperature rise (°C above nominal ~55.0°C)
+    """
+    v_pu = reading.get("voltage_pu", 1.0)
+    curr = reading.get("current_A", 180.0)
+    thd = reading.get("thd_pct", 4.0)
+    temp = reading.get("temp_C", 55.0)
+
+    # 1. Voltage sag severity (0 to 1)
+    v_sag = max(0.0, (1.0 - v_pu)) / 0.45
+
+    # 2. Current surge severity (0 to 1)
+    i_surge = max(0.0, (curr - 180.0)) / 220.0
+
+    # 3. THD waveform distortion severity (0 to 1)
+    thd_sev = max(0.0, (thd - 4.0)) / 16.0
+
+    # 4. Thermal rise severity (0 to 1)
+    t_rise = max(0.0, (temp - 55.0)) / 25.0
+
+    # Combined physics score weighted by grid risk parameters
+    raw_score = 0.40 * v_sag + 0.35 * i_surge + 0.15 * thd_sev + 0.10 * t_rise
+
+    # Add realistic sensor jitter (+- 0.012)
+    jitter = random.uniform(-0.012, 0.012)
+
+    final_prob = raw_score + jitter
+    return round(min(0.995, max(0.015, final_prob)), 3)
 
 
 @router.websocket("/ws/live")

@@ -151,15 +151,20 @@ function MapController({ center, zoom }: { center: [number, number]; zoom: numbe
   return null
 }
 
+interface FeederMapProps {
+  restrictedZoneId?: number
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
-export function FeederMap() {
+export function FeederMap({ restrictedZoneId }: FeederMapProps = {}) {
   const { sections, activeAlert, selectedSectionId, setSelectedSectionId } = useGridStore()
 
-  const selectedZone = PUNE_FEEDER_ZONES[selectedSectionId] ?? PUNE_FEEDER_ZONES[3]
+  const activeZoneId  = restrictedZoneId ?? selectedSectionId
+  const selectedZone  = PUNE_FEEDER_ZONES[activeZoneId] ?? PUNE_FEEDER_ZONES[3]
   const [isOverview, setIsOverview] = useState(false)
 
-  const mapCenter = isOverview ? PUNE_OVERVIEW.center : selectedZone.center
-  const mapZoom   = isOverview ? PUNE_OVERVIEW.zoom   : selectedZone.zoom
+  const mapCenter = (isOverview && !restrictedZoneId) ? PUNE_OVERVIEW.center : selectedZone.center
+  const mapZoom   = (isOverview && !restrictedZoneId) ? PUNE_OVERVIEW.zoom   : selectedZone.zoom
 
   const sectionStatus: Record<number, SectionStatus> = {}
   sections.forEach(s => { sectionStatus[s.id] = s.status })
@@ -171,8 +176,8 @@ export function FeederMap() {
         <div>
           <div className="card-header mb-0">
             <span className="text-electric">⚡</span>
-            Feeder Map — Pune Circle GIS
-            {activeAlert && (
+            Feeder Map — {restrictedZoneId ? `${selectedZone.name} GIS` : 'Pune Circle GIS'}
+            {activeAlert && activeAlert.section_id === activeZoneId && (
               <span className="ml-3 px-2.5 py-0.5 rounded-full bg-red-500/20 border border-red-500/40 text-red-400 text-xs font-bold animate-pulse">
                 ⚠ FAULT ALERT: ZONE {activeAlert.section_id}
               </span>
@@ -180,37 +185,46 @@ export function FeederMap() {
           </div>
           <p className="text-[11px] text-gray-400 flex items-center gap-1 mt-0.5 font-medium">
             <Layers className="w-3 h-3 text-electric" />
-            {isOverview ? 'Pune Metropolitan Circle (5 Main Feeder Corridors)' : `${selectedZone.name} — ${selectedZone.area} (${selectedZone.consumers} consumers)`}
+            {isOverview && !restrictedZoneId 
+              ? 'Pune Metropolitan Circle (5 Main Feeder Corridors)' 
+              : `${selectedZone.name} — ${selectedZone.area} (${selectedZone.consumers} consumers)`}
           </p>
         </div>
 
-        {/* Substation Zone Selector */}
+        {/* Substation Zone Selector / Readonly Pill */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 bg-[#0a1525] border border-electric/30 rounded-xl px-3 py-1.5">
-            <Zap className="w-3.5 h-3.5 text-electric" />
-            <select
-              value={isOverview ? 'overview' : selectedSectionId}
-              onChange={e => {
-                const val = e.target.value
-                if (val === 'overview') {
-                  setIsOverview(true)
-                } else {
-                  setIsOverview(false)
-                  setSelectedSectionId(Number(val))
-                }
-              }}
-              className="bg-transparent text-xs font-bold text-white focus:outline-none cursor-pointer"
-            >
-              <option value="overview" className="bg-[#0a1525] text-white">
-                🌐 Entire Pune Grid Overview
-              </option>
-              {Object.values(PUNE_FEEDER_ZONES).map(zone => (
-                <option key={zone.id} value={zone.id} className="bg-[#0a1525] text-white">
-                  📍 {zone.name}
+          {restrictedZoneId ? (
+            <div className="flex items-center gap-2 bg-[#0a1525] border border-electric/40 text-electric rounded-xl px-3 py-1.5 font-bold text-xs">
+              <Zap className="w-3.5 h-3.5" />
+              <span>📍 Your Zone: {selectedZone.name}</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1.5 bg-[#0a1525] border border-electric/30 rounded-xl px-3 py-1.5">
+              <Zap className="w-3.5 h-3.5 text-electric" />
+              <select
+                value={isOverview ? 'overview' : selectedSectionId}
+                onChange={e => {
+                  const val = e.target.value
+                  if (val === 'overview') {
+                    setIsOverview(true)
+                  } else {
+                    setIsOverview(false)
+                    setSelectedSectionId(Number(val))
+                  }
+                }}
+                className="bg-transparent text-xs font-bold text-white focus:outline-none cursor-pointer"
+              >
+                <option value="overview" className="bg-[#0a1525] text-white">
+                  🌐 Entire Pune Grid Overview
                 </option>
-              ))}
-            </select>
-          </div>
+                {Object.values(PUNE_FEEDER_ZONES).map(zone => (
+                  <option key={zone.id} value={zone.id} className="bg-[#0a1525] text-white">
+                    📍 {zone.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
       </div>
 
@@ -226,13 +240,16 @@ export function FeederMap() {
           <MapController center={mapCenter} zoom={mapZoom} />
           <TileLayer attribution="" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-          {/* Feeder section lines for all 5 zones */}
-          {Object.values(PUNE_FEEDER_ZONES).map(zone => {
+          {/* Feeder section lines (restricted to consumer zone if restrictedZoneId set) */}
+          {(restrictedZoneId 
+            ? Object.values(PUNE_FEEDER_ZONES).filter(z => z.id === restrictedZoneId)
+            : Object.values(PUNE_FEEDER_ZONES)
+          ).map(zone => {
             const secId    = zone.id
             const status   = sectionStatus[secId] ?? 'normal'
             const color    = STATUS_COLORS[status]
             const isCrit   = status === 'critical'
-            const isSel    = secId === selectedSectionId
+            const isSel    = secId === activeZoneId
 
             return (
               <Polyline
@@ -240,8 +257,10 @@ export function FeederMap() {
                 positions={zone.lineCoords}
                 eventHandlers={{
                   click: () => {
-                    setIsOverview(false)
-                    setSelectedSectionId(secId)
+                    if (!restrictedZoneId) {
+                      setIsOverview(false)
+                      setSelectedSectionId(secId)
+                    }
                   }
                 }}
                 pathOptions={{
@@ -260,7 +279,10 @@ export function FeederMap() {
           })}
 
           {/* Critical fault markers */}
-          {sections.filter(s => s.status === 'critical').map(s => {
+          {(restrictedZoneId
+            ? sections.filter(s => s.status === 'critical' && s.id === restrictedZoneId)
+            : sections.filter(s => s.status === 'critical')
+          ).map(s => {
             const zone = PUNE_FEEDER_ZONES[s.id]
             if (!zone) return null
 
@@ -271,8 +293,10 @@ export function FeederMap() {
                 icon={faultIcon('#EF4444')}
                 eventHandlers={{
                   click: () => {
-                    setIsOverview(false)
-                    setSelectedSectionId(s.id)
+                    if (!restrictedZoneId) {
+                      setIsOverview(false)
+                      setSelectedSectionId(s.id)
+                    }
                   }
                 }}
               >

@@ -80,19 +80,58 @@ export interface SwitchingGuideResponse {
   estimated_restore_time_min: number;
 }
 
+export interface User {
+  id:        number;
+  email:     string;
+  full_name: string;
+  role:      'consumer' | 'admin';
+  zone_id:   number;
+  phone?:    string;
+  avatar_data?: string;
+}
+
+export interface AuthResponse {
+  access_token: string;
+  token_type:   string;
+  user:         User;
+}
+
 export interface ComplaintRequest {
-  text:     string;
-  village?: string;
-  phone?:   string;
+  village:     string;
+  category?:   string;
+  description?:string;
+  section_id?: number;
+  image_data?: string;
 }
 
 export interface ComplaintResponse {
-  id:           number;
-  section_id:   number;
-  village:      string;
-  submitted_at: string;
-  acknowledged: boolean;
+  id:            number;
+  user_id?:      number;
+  email?:        string;
+  consumer_name?:string;
+  section_id:    number;
+  village:       string;
+  category?:     string;
+  description?:  string;
+  image_data?:   string;
+  status:        'pending' | 'in_progress' | 'resolved';
+  submitted_at:  string;
+  resolved_at?:  string;
+  acknowledged:  boolean;
+  impact_count?: number;
+  duplicate_merged?: boolean;
+  message?:      string;
 }
+
+export interface AuditLog {
+  id:           number;
+  complaint_id: number | null;
+  action:       string;
+  details:      string;
+  performed_by: string;
+  timestamp:    string;
+}
+
 
 export interface WSMessage {
   type: 'sensor_reading' | 'fault_alert' | 'heartbeat';

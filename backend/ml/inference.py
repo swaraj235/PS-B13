@@ -331,21 +331,25 @@ class GridSentinelInference:
     def get_switching_guide(self, section_id: int) -> dict:
         """Rule-based restoration switching guide for the given fault section."""
         guides = {
-            1: [{"step_number":1,"action":"Open isolator S1-A at substation","switch_id":"S1-A","safety_check":"Confirm section 1 de-energised","restores":[]},
-                {"step_number":2,"action":"Close tie switch TS-12 to back-feed section 1 from section 2","switch_id":"TS-12","safety_check":"Verify load < 80% capacity","restores":["Ranjangaon","Shikrapur"]}],
-            2: [{"step_number":1,"action":"Open isolator S2-A","switch_id":"S2-A","safety_check":"Confirm section 2 de-energised","restores":[]},
-                {"step_number":2,"action":"Close TS-13 to back-feed via section 3","switch_id":"TS-13","safety_check":"Check transformer T2 load","restores":["Kedgaon","Shirur"]}],
-            3: [{"step_number":1,"action":"Open isolator S3-A","switch_id":"S3-A","safety_check":"Confirm section 3 de-energised","restores":[]},
-                {"step_number":2,"action":"Close TS-34","switch_id":"TS-34","safety_check":"Verify no back-feed from DG set","restores":["Koregaon Bhima"]},
-                {"step_number":3,"action":"Restore Sanaswadi via section 4 tie","switch_id":"TS-35","safety_check":"Load balance check","restores":["Sanaswadi"]}],
-            4: [{"step_number":1,"action":"Open isolator S4-A","switch_id":"S4-A","safety_check":"Confirm section 4 de-energised","restores":[]},
-                {"step_number":2,"action":"Close TS-45","switch_id":"TS-45","safety_check":"Check line rating","restores":["Wagholi","Loni Kalbhor"]}],
-            5: [{"step_number":1,"action":"Open isolator S5-A","switch_id":"S5-A","safety_check":"Confirm section 5 de-energised","restores":[]},
-                {"step_number":2,"action":"Restore via section 4 if back-feed available","switch_id":"TS-54","safety_check":"Check available capacity","restores":["Uruli Kanchan","Phursungi"]}],
+            1: [{"step_number":1,"action":"Open isolator S1-A at Kothrud substation","switch_id":"S1-A","safety_check":"Confirm section 1 de-energised","restores":[]},
+                {"step_number":2,"action":"Close tie switch TS-12 to back-feed section 1 from section 2","switch_id":"TS-12","safety_check":"Verify load < 80% capacity","restores":["Kothrud Central","Karve Nagar"]}],
+            2: [{"step_number":1,"action":"Open isolator S2-A at Paud Rd branch","switch_id":"S2-A","safety_check":"Confirm section 2 de-energised","restores":[]},
+                {"step_number":2,"action":"Close TS-23 to back-feed via section 3","switch_id":"TS-23","safety_check":"Check transformer T2 load","restores":["Ideal Colony","Bavdhan Khurd"]}],
+            3: [{"step_number":1,"action":"Open isolator S3-A at Kondhwa feeder","switch_id":"S3-A","safety_check":"Confirm section 3 de-energised","restores":[]},
+                {"step_number":2,"action":"Close TS-34 isolator","switch_id":"TS-34","safety_check":"Verify no back-feed from DG set","restores":["Kondhwa Budruk","Undri"]},
+                {"step_number":3,"action":"Restore Pisoli & NIBM Rd via section 4 tie switch","switch_id":"TS-35","safety_check":"Load balance check","restores":["Pisoli","NIBM Rd"]}],
+            4: [{"step_number":1,"action":"Open isolator S4-A at Hadapsar industrial line","switch_id":"S4-A","safety_check":"Confirm section 4 de-energised","restores":[]},
+                {"step_number":2,"action":"Close TS-45 tie","switch_id":"TS-45","safety_check":"Check line rating","restores":["Magarpatta","Mundhwa"]}],
+            5: [{"step_number":1,"action":"Open isolator S5-A at Swargate central","switch_id":"S5-A","safety_check":"Confirm section 5 de-energised","restores":[]},
+                {"step_number":2,"action":"Restore via section 4 tie if back-feed available","switch_id":"TS-54","safety_check":"Check available capacity","restores":["Camp Market","Parvati Hill"]}],
         }
-        villages = {1:["Ranjangaon","Shikrapur"], 2:["Kedgaon","Shirur"],
-                    3:["Koregaon Bhima","Sanaswadi"], 4:["Wagholi","Loni Kalbhor"],
-                    5:["Uruli Kanchan","Phursungi"]}
+        villages = {
+            1: ["Kothrud Central", "Karve Nagar", "Warje Malwadi", "Erandwane"],
+            2: ["Paud Road", "Ideal Colony", "Bavdhan Khurd", "Bhugaon"],
+            3: ["Kondhwa Budruk", "Kondhwa Khurd", "Undri", "Pisoli", "NIBM Rd"],
+            4: ["Hadapsar", "Magarpatta", "Amanora", "Mundhwa"],
+            5: ["Swargate Terminal", "Camp Market", "Parvati Hill", "Shivajinagar"]
+        }
         steps = guides.get(section_id, [])
         return {
             "fault_section_id":            section_id,

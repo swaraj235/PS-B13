@@ -8,35 +8,74 @@ import type {
   ComplaintRequest,
   ComplaintResponse,
   FaultTypeKey,
+  User,
+  AuthResponse,
 } from '../types'
 
-async function get<T>(path: string): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`)
-  if (!res.ok) throw new Error(`API error ${res.status}: ${path}`)
+function getHeaders(token?: string | null): Record<string, string> {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+  const authToken = token || localStorage.getItem('gridsentinel_token')
+  if (authToken) {
+    headers['Authorization'] = `Bearer ${authToken}`
+  }
+  return headers
+}
+
+async function get<T>(path: string, token?: string | null): Promise<T> {
+  const res = await fetch(`${API_BASE}${path}`, { headers: getHeaders(token) })
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}))
+    throw new Error(errData.detail || `API error ${res.status}: ${path}`)
+  }
   return res.json()
 }
 
-async function post<T>(path: string, body: unknown): Promise<T> {
+async function post<T>(path: string, body: unknown, token?: string | null): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
     method:  'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getHeaders(token),
     body:    JSON.stringify(body),
   })
-  if (!res.ok) throw new Error(`API error ${res.status}: ${path}`)
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}))
+    throw new Error(errData.detail || `API error ${res.status}: ${path}`)
+  }
   return res.json()
 }
 
-async function patch<T>(path: string, body?: unknown): Promise<T> {
+async function patch<T>(path: string, body?: unknown, token?: string | null): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
     method:  'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getHeaders(token),
     body:    body ? JSON.stringify(body) : undefined,
   })
-  if (!res.ok) throw new Error(`API error ${res.status}: ${path}`)
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}))
+    throw new Error(errData.detail || `API error ${res.status}: ${path}`)
+  }
+  return res.json()
+}
+
+async function put<T>(path: string, body: unknown, token?: string | null): Promise<T> {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method:  'PUT',
+    headers: getHeaders(token),
+    body:    JSON.stringify(body),
+  })
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}))
+    throw new Error(errData.detail || `API error ${res.status}: ${path}`)
+  }
   return res.json()
 }
 
 export const api = {
+  // Auth
+  signup:            (data: unknown): Promise<AuthResponse> => post('/api/auth/signup', data),
+  login:             (data: unknown): Promise<AuthResponse> => post('/api/auth/login', data),
+  getMe:             (): Promise<User>                     => get('/api/auth/me'),
+  updateProfile:     (data: unknown): Promise<User>        => put('/api/auth/profile', data),
+
   // Fault
   getFaultLocalize:  (): Promise<LocalizeResponse>      => get('/api/fault/localize'),
   getFaultClassify:  (sectionId: number): Promise<ClassifyResponse>  => get(`/api/fault/classify?section_id=${sectionId}`),
@@ -62,9 +101,14 @@ export const api = {
 
   // Complaints
   submitComplaint:     (req: ComplaintRequest): Promise<ComplaintResponse> => post('/api/complaints', req),
-  getComplaints:       (): Promise<{ complaints: ComplaintResponse[] }> => get('/api/complaints'),
+  getComplaints:       (email?: string): Promise<{ complaints: ComplaintResponse[] }> => get(email ? `/api/complaints?email=${encodeURIComponent(email)}` : '/api/complaints'),
   acknowledgeComplaint:(id: number): Promise<ComplaintResponse> => patch(`/api/complaints/${id}/acknowledge`),
+  updateComplaintStatus:(id: number, status: string): Promise<ComplaintResponse> => patch(`/api/complaints/${id}/status`, { status }),
+  endorseComplaint:    (id: number): Promise<{ status: string; id: number; impact_count: number }> => post(`/api/complaints/${id}/endorse`, {}),
+  importCSV:           (items: unknown[]): Promise<{ status: string; imported: number }> => post('/api/complaints/import-csv', { items }),
+  getAuditLogs:        (): Promise<{ audit_logs: import('../types').AuditLog[] }> => get('/api/complaints/audit-logs'),
 
   // Health
   health:              (): Promise<{ status: string; mock_mode: boolean }> => get('/health'),
 }
+
