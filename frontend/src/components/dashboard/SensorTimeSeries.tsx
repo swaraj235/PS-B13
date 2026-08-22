@@ -4,6 +4,7 @@ import {
 } from 'recharts'
 import { Activity, Cpu } from 'lucide-react'
 import { useGridStore } from '../../store/gridStore'
+import { SECTION_NAMES } from '../../lib/constants'
 
 interface Props {
   sectionId?: number
@@ -28,6 +29,7 @@ export function SensorTimeSeries({ sectionId = 3 }: Props) {
   const { sensorHistory, latestReadings } = useGridStore()
   const readings = sensorHistory[sectionId] ?? []
   const latest   = latestReadings[sectionId]
+  const zoneTitle = SECTION_NAMES[sectionId]?.title ?? `Zone ${sectionId}`
 
   const chartData = readings.slice(-30).map(r => ({
     t:           new Date(r.timestamp).toLocaleTimeString('en-IN', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }),
@@ -42,12 +44,12 @@ export function SensorTimeSeries({ sectionId = 3 }: Props) {
       <div className="card-header justify-between mb-0">
         <div className="flex items-center gap-2">
           <Activity className="w-4 h-4 text-electric" />
-          Live Sensor Telemetry — Section {sectionId}
+          Live Physical Sensors — {zoneTitle}
         </div>
         {latest && (
           <span className="flex items-center gap-1.5 text-green-400 text-xs font-bold font-mono">
             <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
-            STREAMING
+            LIVE STREAMING
           </span>
         )}
       </div>
@@ -56,22 +58,23 @@ export function SensorTimeSeries({ sectionId = 3 }: Props) {
       {latest && (
         <div className="grid grid-cols-3 gap-3">
           {[
-            { label: 'Voltage',     value: `${latest.voltage_pu.toFixed(3)} pu`,  color: '#00D4FF', icon: '⚡' },
-            { label: 'Current',     value: `${latest.current_A.toFixed(0)} A`,    color: '#EF4444', icon: '🔌' },
-            { label: 'Temperature', value: `${latest.temp_C.toFixed(1)} °C`,       color: '#F59E0B', icon: '🌡' },
-          ].map(({ label, value, color, icon }) => (
+            { label: 'Line Voltage', value: `${(latest.voltage_pu * 100).toFixed(1)}%`, note: `${latest.voltage_pu.toFixed(3)} pu`, color: '#00D4FF', icon: '⚡' },
+            { label: 'Current Load', value: `${latest.current_A.toFixed(0)} Amps`, note: 'Line Load', color: '#EF4444', icon: '🔌' },
+            { label: 'Equipment Temp', value: `${latest.temp_C.toFixed(1)} °C`, note: 'Thermal Level', color: '#F59E0B', icon: '🌡' },
+          ].map(({ label, value, note, color, icon }) => (
             <div
               key={label}
-              className="rounded-xl p-3 text-center border"
+              className="rounded-xl p-2.5 text-center border"
               style={{
                 background: `${color}12`,
                 borderColor: `${color}30`,
               }}
             >
-              <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-widest mb-1">
+              <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider mb-0.5">
                 {icon} {label}
               </p>
-              <p className="font-mono text-lg font-bold" style={{ color }}>{value}</p>
+              <p className="font-mono text-base font-bold" style={{ color }}>{value}</p>
+              <p className="text-[9px] text-gray-400 mt-0.5">{note}</p>
             </div>
           ))}
         </div>

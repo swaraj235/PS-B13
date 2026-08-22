@@ -28,122 +28,106 @@ export interface SubstationZone {
   midpoints: [number, number][]
 }
 
-export const PUNE_SUBSTATIONS: Record<string, SubstationZone> = {
-  all_pune: {
-    id: 'all_pune',
-    name: 'IEEE 33-Bus Benchmark (Pune Circle Overview)',
-    area: 'Pune Metropolitan Region',
-    voltage: '33kV / 11kV',
-    consumers: '1,20,000+',
-    center: [18.524, 73.850],
-    zoom: 12,
-    feederLines: [
-      [[18.500, 73.800], [18.515, 73.820]],
-      [[18.515, 73.820], [18.525, 73.840]],
-      [[18.525, 73.840], [18.535, 73.860]],
-      [[18.535, 73.860], [18.542, 73.880]],
-      [[18.542, 73.880], [18.548, 73.900]],
-    ],
-    midpoints: [
-      [18.507, 73.810],
-      [18.520, 73.830],
-      [18.530, 73.850],
-      [18.538, 73.870],
-      [18.545, 73.890],
-    ]
-  },
-  kondhwa: {
-    id: 'kondhwa',
-    name: 'Kondhwa 22/11kV Substation',
-    area: 'Kondhwa Budruk, Khurd, Undri, NIBM & Pisoli',
-    voltage: '22kV / 11kV',
-    consumers: '48,500',
-    center: [18.468, 73.890],
-    zoom: 14,
-    feederLines: [
-      [[18.464, 73.885], [18.472, 73.892]], // Sec 1: Kondhwa Budruk Main Line
-      [[18.472, 73.892], [18.478, 73.899]], // Sec 2: NIBM Rd Feeder
-      [[18.478, 73.899], [18.465, 73.908]], // Sec 3: Undri-Pisoli Line
-      [[18.465, 73.908], [18.455, 73.918]], // Sec 4: Katraj-Kondhwa Bypass
-      [[18.455, 73.918], [18.448, 73.928]], // Sec 5: Yeolewadi / Saswad Link
-    ],
-    midpoints: [
-      [18.468, 73.888],
-      [18.475, 73.895],
-      [18.471, 73.903],
-      [18.460, 73.913],
-      [18.451, 73.923],
-    ]
-  },
-  kothrud: {
-    id: 'kothrud',
-    name: 'Kothrud 11kV Substation',
-    area: 'Kothrud, Warje, Karve Nagar & Erandwane',
-    voltage: '11kV',
+// ── Substation Zone Definitions for Pune Circle ────────────────────────────────
+export interface FeederZoneDef {
+  id: number
+  name: string
+  area: string
+  voltage: string
+  consumers: string
+  center: [number, number]
+  zoom: number
+  lineCoords: [number, number][]
+  midpoint: [number, number]
+}
+
+export const PUNE_FEEDER_ZONES: Record<number, FeederZoneDef> = {
+  1: {
+    id: 1,
+    name: 'Zone 1: Kothrud Substation',
+    area: 'Kothrud Central, Karve Nagar & Warje',
+    voltage: '11kV Feeder',
     consumers: '62,000',
     center: [18.507, 73.805],
     zoom: 14,
-    feederLines: [
-      [[18.501, 73.800], [18.508, 73.810]], // Sec 1: Karve Rd Feeder
-      [[18.508, 73.810], [18.514, 73.818]], // Sec 2: Paud Rd / Ideal Colony
-      [[18.514, 73.818], [18.495, 73.812]], // Sec 3: Warje Malwadi Line
-      [[18.495, 73.812], [18.486, 73.820]], // Sec 4: Karve Nagar Feeder
-      [[18.486, 73.820], [18.478, 73.828]], // Sec 5: Cummins College Link
+    lineCoords: [
+      [18.501, 73.800],
+      [18.508, 73.810],
+      [18.514, 73.818],
+      [18.495, 73.812],
     ],
-    midpoints: [
-      [18.504, 73.805],
-      [18.511, 73.814],
-      [18.504, 73.815],
-      [18.490, 73.816],
-      [18.482, 73.824],
-    ]
+    midpoint: [18.504, 73.805],
   },
-  hadapsar: {
-    id: 'hadapsar',
-    name: 'Hadapsar 22kV Substation',
-    area: 'Hadapsar, Magarpatta, Amanora & Mundhwa',
-    voltage: '22kV',
+  2: {
+    id: 2,
+    name: 'Zone 2: Paud Road Substation',
+    area: 'Paud Road, Ideal Colony & Bavdhan',
+    voltage: '11kV Feeder',
+    consumers: '45,000',
+    center: [18.522, 73.830],
+    zoom: 14,
+    lineCoords: [
+      [18.514, 73.818],
+      [18.522, 73.830],
+      [18.528, 73.840],
+      [18.535, 73.848],
+    ],
+    midpoint: [18.525, 73.835],
+  },
+  3: {
+    id: 3,
+    name: 'Zone 3: Kondhwa Substation',
+    area: 'Kondhwa Budruk, Undri & NIBM Rd',
+    voltage: '22kV / 11kV Feeder',
+    consumers: '48,500',
+    center: [18.468, 73.890],
+    zoom: 14,
+    lineCoords: [
+      [18.464, 73.885],
+      [18.472, 73.892],
+      [18.478, 73.899],
+      [18.465, 73.908],
+    ],
+    midpoint: [18.471, 73.895],
+  },
+  4: {
+    id: 4,
+    name: 'Zone 4: Hadapsar Substation',
+    area: 'Hadapsar & Magarpatta Industrial',
+    voltage: '22kV Feeder',
     consumers: '74,000',
     center: [18.508, 73.926],
     zoom: 14,
-    feederLines: [
-      [[18.502, 73.920], [18.512, 73.928]], // Sec 1: Solapur Rd Feeder
-      [[18.512, 73.928], [18.520, 73.935]], // Sec 2: Magarpatta Cybercity
-      [[18.520, 73.935], [18.528, 73.945]], // Sec 3: Amanora Town Feeder
-      [[18.528, 73.945], [18.535, 73.952]], // Sec 4: Mundhwa Industrial Feeder
-      [[18.535, 73.952], [18.542, 73.960]], // Sec 5: Keshavnagar Feeder
+    lineCoords: [
+      [18.502, 73.920],
+      [18.512, 73.928],
+      [18.520, 73.935],
+      [18.528, 73.945],
     ],
-    midpoints: [
-      [18.507, 73.924],
-      [18.516, 73.931],
-      [18.524, 73.940],
-      [18.531, 73.948],
-      [18.538, 73.956],
-    ]
+    midpoint: [18.516, 73.931],
   },
-  swargate: {
-    id: 'swargate',
-    name: 'Swargate / Camp Substation',
-    area: 'Swargate, Camp, Parvati, Sarasbaug & Shivajinagar',
-    voltage: '11kV',
+  5: {
+    id: 5,
+    name: 'Zone 5: Swargate Substation',
+    area: 'Swargate Terminal & Camp Market',
+    voltage: '11kV Feeder',
     consumers: '58,000',
     center: [18.501, 73.858],
     zoom: 14,
-    feederLines: [
-      [[18.498, 73.855], [18.505, 73.865]], // Sec 1: Shankarsheth Rd Feeder
-      [[18.505, 73.865], [18.515, 73.875]], // Sec 2: MG Road Camp Line
-      [[18.515, 73.875], [18.525, 73.865]], // Sec 3: Pune Station Feeder
-      [[18.525, 73.865], [18.530, 73.852]], // Sec 4: Shivajinagar Line
-      [[18.530, 73.852], [18.490, 73.848]], // Sec 5: Parvati Hill Feeder
+    lineCoords: [
+      [18.498, 73.855],
+      [18.505, 73.865],
+      [18.515, 73.875],
+      [18.525, 73.865],
     ],
-    midpoints: [
-      [18.501, 73.860],
-      [18.510, 73.870],
-      [18.520, 73.870],
-      [18.527, 73.858],
-      [18.510, 73.850],
-    ]
-  }
+    midpoint: [18.510, 73.865],
+  },
+}
+
+// Overview option for showing full Pune Circle
+const PUNE_OVERVIEW = {
+  center: [18.505, 73.860] as [number, number],
+  zoom: 12,
 }
 
 // ── Icon helpers ─────────────────────────────────────────────────────────────
@@ -160,7 +144,7 @@ function MapController({ center, zoom }: { center: [number, number]; zoom: numbe
   const prevCenter = useRef<[number, number]>([0, 0])
   useEffect(() => {
     if (prevCenter.current[0] !== center[0] || prevCenter.current[1] !== center[1]) {
-      map.flyTo(center, zoom, { duration: 1.4, easeLinearity: 0.3 })
+      map.flyTo(center, zoom, { duration: 1.2, easeLinearity: 0.3 })
       prevCenter.current = center
     }
   }, [center, zoom, map])
@@ -171,21 +155,11 @@ function MapController({ center, zoom }: { center: [number, number]; zoom: numbe
 export function FeederMap() {
   const { sections, activeAlert, selectedSectionId, setSelectedSectionId } = useGridStore()
 
-  const [selectedSubstationKey, setSelectedSubstationKey] = useState<string>('kondhwa')
-  const currentZone = PUNE_SUBSTATIONS[selectedSubstationKey] || PUNE_SUBSTATIONS.all_pune
+  const selectedZone = PUNE_FEEDER_ZONES[selectedSectionId] ?? PUNE_FEEDER_ZONES[3]
+  const [isOverview, setIsOverview] = useState(false)
 
-  const [mapCenter, setMapCenter] = useState<[number, number]>(currentZone.center)
-  const [mapZoom,   setMapZoom]   = useState(currentZone.zoom)
-
-  // Update map position when substation dropdown changes
-  const handleSubstationChange = (key: string) => {
-    setSelectedSubstationKey(key)
-    const zone = PUNE_SUBSTATIONS[key]
-    if (zone) {
-      setMapCenter(zone.center)
-      setMapZoom(zone.zoom)
-    }
-  }
+  const mapCenter = isOverview ? PUNE_OVERVIEW.center : selectedZone.center
+  const mapZoom   = isOverview ? PUNE_OVERVIEW.zoom   : selectedZone.zoom
 
   const sectionStatus: Record<number, SectionStatus> = {}
   sections.forEach(s => { sectionStatus[s.id] = s.status })
@@ -200,27 +174,38 @@ export function FeederMap() {
             Feeder Map — Pune Circle GIS
             {activeAlert && (
               <span className="ml-3 px-2.5 py-0.5 rounded-full bg-red-500/20 border border-red-500/40 text-red-400 text-xs font-bold animate-pulse">
-                ⚠ FAULT: SEC {activeAlert.section_id}
+                ⚠ FAULT ALERT: ZONE {activeAlert.section_id}
               </span>
             )}
           </div>
           <p className="text-[11px] text-gray-400 flex items-center gap-1 mt-0.5 font-medium">
             <Layers className="w-3 h-3 text-electric" />
-            {currentZone.name} — {currentZone.area} ({currentZone.consumers} consumers)
+            {isOverview ? 'Pune Metropolitan Circle (5 Main Feeder Corridors)' : `${selectedZone.name} — ${selectedZone.area} (${selectedZone.consumers} consumers)`}
           </p>
         </div>
 
-        {/* Substation Dropdown */}
+        {/* Substation Zone Selector */}
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5 bg-[#0a1525] border border-electric/30 rounded-xl px-3 py-1.5">
             <Zap className="w-3.5 h-3.5 text-electric" />
             <select
-              value={selectedSubstationKey}
-              onChange={e => handleSubstationChange(e.target.value)}
+              value={isOverview ? 'overview' : selectedSectionId}
+              onChange={e => {
+                const val = e.target.value
+                if (val === 'overview') {
+                  setIsOverview(true)
+                } else {
+                  setIsOverview(false)
+                  setSelectedSectionId(Number(val))
+                }
+              }}
               className="bg-transparent text-xs font-bold text-white focus:outline-none cursor-pointer"
             >
-              {Object.entries(PUNE_SUBSTATIONS).map(([key, zone]) => (
-                <option key={key} value={key} className="bg-[#0a1525] text-white">
+              <option value="overview" className="bg-[#0a1525] text-white">
+                🌐 Entire Pune Grid Overview
+              </option>
+              {Object.values(PUNE_FEEDER_ZONES).map(zone => (
+                <option key={zone.id} value={zone.id} className="bg-[#0a1525] text-white">
                   📍 {zone.name}
                 </option>
               ))}
@@ -241,27 +226,33 @@ export function FeederMap() {
           <MapController center={mapCenter} zoom={mapZoom} />
           <TileLayer attribution="" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-          {/* Feeder section lines */}
-          {currentZone.feederLines.map((coords, idx) => {
-            const secId    = idx + 1
+          {/* Feeder section lines for all 5 zones */}
+          {Object.values(PUNE_FEEDER_ZONES).map(zone => {
+            const secId    = zone.id
             const status   = sectionStatus[secId] ?? 'normal'
             const color    = STATUS_COLORS[status]
             const isCrit   = status === 'critical'
             const isSel    = secId === selectedSectionId
+
             return (
               <Polyline
-                key={`${selectedSubstationKey}-sec-${secId}`}
-                positions={coords}
-                eventHandlers={{ click: () => setSelectedSectionId(secId) }}
+                key={`pune-zone-${secId}`}
+                positions={zone.lineCoords}
+                eventHandlers={{
+                  click: () => {
+                    setIsOverview(false)
+                    setSelectedSectionId(secId)
+                  }
+                }}
                 pathOptions={{
                   color:   isSel ? '#00D4FF' : color,
-                  weight:  isCrit ? 7 : isSel ? 6 : 4,
-                  opacity: isCrit || isSel ? 1 : 0.8,
+                  weight:  isCrit ? 8 : isSel ? 7 : 5,
+                  opacity: isCrit || isSel ? 1 : 0.75,
                 }}
               >
                 <Tooltip direction="top" permanent={isSel}>
                   <span style={{ fontFamily: 'monospace', fontSize: '11px', fontWeight: 700 }}>
-                    Section {secId} — {status.toUpperCase()}
+                    {zone.name} — {status.toUpperCase()}
                   </span>
                 </Tooltip>
               </Polyline>
@@ -270,20 +261,27 @@ export function FeederMap() {
 
           {/* Critical fault markers */}
           {sections.filter(s => s.status === 'critical').map(s => {
-            const midpoint = currentZone.midpoints[s.id - 1] || currentZone.center
+            const zone = PUNE_FEEDER_ZONES[s.id]
+            if (!zone) return null
+
             return (
               <Marker
-                key={`fault-${s.id}`}
-                position={midpoint}
+                key={`fault-marker-${s.id}`}
+                position={zone.midpoint}
                 icon={faultIcon('#EF4444')}
-                eventHandlers={{ click: () => setSelectedSectionId(s.id) }}
+                eventHandlers={{
+                  click: () => {
+                    setIsOverview(false)
+                    setSelectedSectionId(s.id)
+                  }
+                }}
               >
                 <Popup>
-                  <div style={{ fontFamily: 'monospace', minWidth: '160px' }}>
-                    <strong style={{ color: '#EF4444' }}>⚠ CRITICAL FAULT</strong><br />
-                    Substation: {currentZone.name}<br />
-                    Section: {s.id}<br />
-                    Probability: {(s.fault_probability * 100).toFixed(1)}%<br />
+                  <div style={{ fontFamily: 'monospace', minWidth: '170px' }}>
+                    <strong style={{ color: '#EF4444' }}>🚨 CRITICAL FAULT DETECTED</strong><br />
+                    Substation: {zone.name}<br />
+                    Area: {zone.area}<br />
+                    Risk Score: {(s.fault_probability * 100).toFixed(1)}%<br />
                     {activeAlert && `Type: ${faultTypeLabel(activeAlert.fault_type)}`}
                   </div>
                 </Popup>
@@ -295,10 +293,10 @@ export function FeederMap() {
         {/* Map legend */}
         <div className="absolute bottom-3 left-3 bg-[#0d1626]/95 border border-white/10 backdrop-blur-sm rounded-xl p-2.5 z-[1000] text-[10px] space-y-1.5">
           {[
-            { color: '#22C55E', label: 'Normal Section' },
-            { color: '#F59E0B', label: 'Warning Section' },
-            { color: '#EF4444', label: 'Critical Fault Node' },
-            { color: '#00D4FF', label: 'Selected Feeder Section', dashed: true },
+            { color: '#22C55E', label: 'Normal Zone Feeder' },
+            { color: '#F59E0B', label: 'Warning Feeder' },
+            { color: '#EF4444', label: 'Critical Fault Zone' },
+            { color: '#00D4FF', label: 'Selected Feeder Corridor', dashed: true },
           ].map(({ color, label, dashed }) => (
             <div key={label} className="flex items-center gap-2">
               <div className="w-5 h-0.5 rounded flex-shrink-0"

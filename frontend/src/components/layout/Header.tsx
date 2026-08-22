@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import { AlertTriangle, ChevronDown, Clock, Radio } from 'lucide-react'
+import { AlertTriangle, ChevronDown, Clock, Radio, RotateCcw } from 'lucide-react'
 import { useGridStore } from '../../store/gridStore'
-import { FAULT_TYPES } from '../../lib/constants'
+import { FAULT_TYPES, SECTION_NAMES } from '../../lib/constants'
 import type { FaultTypeKey } from '../../types'
 
 const FAULT_OPTIONS: FaultTypeKey[] = [
@@ -17,11 +17,12 @@ interface HeaderProps {
 }
 
 export function Header({ title }: HeaderProps) {
-  const { injectFault } = useGridStore()
+  const { injectFault, resetFault } = useGridStore()
   const [showInject, setShowInject]       = useState(false)
   const [selectedFault, setSelectedFault] = useState<FaultTypeKey>('vegetation_contact')
   const [selectedSection, setSelectedSection] = useState(3)
   const [injecting, setInjecting]         = useState(false)
+  const [resetting, setResetting]         = useState(false)
   const [time, setTime] = useState(new Date())
 
   useEffect(() => {
@@ -45,6 +46,15 @@ export function Header({ title }: HeaderProps) {
     }
   }
 
+  async function handleReset() {
+    setResetting(true)
+    try {
+      await resetFault()
+    } finally {
+      setResetting(false)
+    }
+  }
+
   return (
     <header className="h-16 flex items-center justify-between px-6 border-b border-white/8 bg-[#0a1120]/95 backdrop-blur-sm flex-shrink-0 relative z-20">
       {/* Left: Title */}
@@ -56,26 +66,37 @@ export function Header({ title }: HeaderProps) {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400" />
           </span>
-          <span className="text-xs font-bold text-green-400 tracking-wider">LIVE</span>
+          <span className="text-xs font-bold text-green-400 tracking-wider">REALTIME MONITORING</span>
         </div>
       </div>
 
-      {/* Right: Time + Inject */}
-      <div className="flex items-center gap-4">
+      {/* Right: Time + Controls */}
+      <div className="flex items-center gap-3">
         {/* Clock */}
         <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-navy-700/60 border border-white/8">
           <Clock className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
           <span className="text-xs text-gray-300 font-mono tabular-nums">{now}</span>
         </div>
 
+        {/* Reset Grid Button */}
+        <button
+          onClick={handleReset}
+          disabled={resetting}
+          className="btn-ghost flex items-center gap-1.5 text-xs text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 py-2 px-3"
+          title="Reset grid to normal baseline state"
+        >
+          <RotateCcw className={`w-3.5 h-3.5 ${resetting ? 'animate-spin' : ''}`} />
+          <span>{resetting ? 'Resetting...' : 'Reset Grid'}</span>
+        </button>
+
         {/* Inject Fault dropdown */}
         <div className="relative">
           <button
             onClick={() => setShowInject(v => !v)}
-            className="btn-danger flex items-center gap-2"
+            className="btn-danger flex items-center gap-2 text-xs py-2 px-3"
           >
             <AlertTriangle className="w-4 h-4" />
-            <span>Inject Fault</span>
+            <span>Simulate Fault</span>
             <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showInject ? 'rotate-180' : ''}`} />
           </button>
 
@@ -91,22 +112,24 @@ export function Header({ title }: HeaderProps) {
                 {/* Header */}
                 <div className="px-4 py-3 bg-red-500/10 border-b border-red-500/20 flex items-center gap-2">
                   <Radio className="w-4 h-4 text-red-400 animate-pulse" />
-                  <p className="text-xs font-bold text-red-400 tracking-wider uppercase">Demo Fault Injection</p>
+                  <p className="text-xs font-bold text-red-400 tracking-wider uppercase">Grid Fault Simulator</p>
                 </div>
 
                 <div className="p-4 space-y-4">
                   {/* Section select */}
                   <div>
                     <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1.5">
-                      📍 Target Section
+                      📍 Target Substation Zone
                     </label>
                     <select
                       value={selectedSection}
                       onChange={e => setSelectedSection(Number(e.target.value))}
-                      className="w-full bg-[#111e35] border border-white/12 rounded-xl px-3 py-2.5 text-sm text-white font-semibold focus:outline-none focus:border-electric appearance-none"
+                      className="w-full bg-[#111e35] border border-white/12 rounded-xl px-3 py-2.5 text-xs text-white font-semibold focus:outline-none focus:border-electric appearance-none"
                     >
                       {[1,2,3,4,5].map(i => (
-                        <option key={i} value={i}>Section {i}</option>
+                        <option key={i} value={i}>
+                          {SECTION_NAMES[i]?.title ?? `Zone ${i}`}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -114,12 +137,12 @@ export function Header({ title }: HeaderProps) {
                   {/* Fault type select */}
                   <div>
                     <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1.5">
-                      ⚠ Fault Type
+                      ⚠ Grid Issue Type
                     </label>
                     <select
                       value={selectedFault}
                       onChange={e => setSelectedFault(e.target.value as FaultTypeKey)}
-                      className="w-full bg-[#111e35] border border-white/12 rounded-xl px-3 py-2.5 text-sm text-white font-semibold focus:outline-none focus:border-electric appearance-none"
+                      className="w-full bg-[#111e35] border border-white/12 rounded-xl px-3 py-2.5 text-xs text-white font-semibold focus:outline-none focus:border-electric appearance-none"
                     >
                       {FAULT_OPTIONS.map(f => (
                         <option key={f} value={f}>{FAULT_TYPES[f]}</option>
@@ -131,13 +154,13 @@ export function Header({ title }: HeaderProps) {
                     <button
                       onClick={handleInject}
                       disabled={injecting}
-                      className="flex-1 btn-danger text-sm"
+                      className="flex-1 btn-danger text-xs py-2"
                     >
-                      {injecting ? 'Injecting…' : '⚡ Inject Now'}
+                      {injecting ? 'Simulating…' : '⚡ Trigger Simulation'}
                     </button>
                     <button
                       onClick={() => setShowInject(false)}
-                      className="btn-ghost text-sm px-3"
+                      className="btn-ghost text-xs px-3"
                     >
                       Cancel
                     </button>

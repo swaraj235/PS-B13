@@ -44,10 +44,18 @@ export const SECTION_COORDINATES: Record<number, [number, number][]> = {
 export const API_BASE = (import.meta as any).env?.VITE_API_URL ?? 'http://localhost:8000'
 export const WS_BASE  = (import.meta as any).env?.VITE_WS_URL  ?? 'ws://localhost:8000'
 
+export const SECTION_NAMES: Record<number, { title: string; area: string; desc: string }> = {
+  1: { title: 'Zone 1 (Kothrud)', area: 'Kothrud & Karve Nagar', desc: '11kV Feeder Line — Kothrud Substation' },
+  2: { title: 'Zone 2 (Paud Road)', area: 'Paud Rd & Bavdhan', desc: '11kV Feeder Line — Paud Branch Sub' },
+  3: { title: 'Zone 3 (Kondhwa)', area: 'Kondhwa, Undri & NIBM', desc: '22/11kV Primary Feeder — Kondhwa Sub' },
+  4: { title: 'Zone 4 (Hadapsar)', area: 'Hadapsar & Magarpatta', desc: '22kV Industrial Line — Hadapsar Sub' },
+  5: { title: 'Zone 5 (Swargate)', area: 'Swargate & Camp Market', desc: '11kV Central Core — Swargate Substation' },
+}
+
 export const SECTION_VILLAGES: Record<number, string[]> = {
-  1: ['Kothrud', 'Warje'],
-  2: ['Paud', 'Bhugaon'],
-  3: ['Vadgaon', 'Pirangut', 'Bavdhan'],
-  4: ['Mulshi', 'Lavad'],
-  5: ['Tamhini', 'Donaje'],
+  1: ['Kothrud Central', 'Karve Nagar', 'Warje Malwadi', 'Erandwane'],
+  2: ['Paud Road', 'Ideal Colony', 'Bavdhan Khurd', 'Bhugaon'],
+  3: ['Kondhwa Budruk', 'Kondhwa Khurd', 'Undri', 'Pisoli', 'NIBM Rd'],
+  4: ['Hadapsar', 'Magarpatta', 'Amanora', 'Mundhwa'],
+  5: ['Swargate Terminal', 'Camp Market', 'Parvati Hill', 'Shivajinagar'],
 }

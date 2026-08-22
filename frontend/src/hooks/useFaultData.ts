@@ -5,7 +5,7 @@ import { useGridStore } from '../store/gridStore'
 const POLL_INTERVAL = 10_000  // 10s
 
 export function useFaultData() {
-  const { _setSections, _setGeoJSON, loadSwitchingGuide, alerts } = useGridStore()
+  const { _setSections, _setGeoJSON, loadSwitchingGuide, loadComplaints, alerts } = useGridStore()
 
   useEffect(() => {
     async function poll() {
@@ -15,6 +15,9 @@ export function useFaultData() {
 
         const geo = await api.getFaultOverlay()
         _setGeoJSON(geo)
+
+        // Load complaints feed on initial render
+        loadComplaints()
       } catch (e) {
         console.error('[useFaultData] poll error', e)
       }

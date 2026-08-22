@@ -1,20 +1,44 @@
+import { useState } from 'react'
 import type { TowerReading } from '../../types'
 import { statusToColor } from '../../lib/utils'
+import { api } from '../../lib/api'
+import { useGridStore } from '../../store/gridStore'
 
 interface Props {
   tower: TowerReading
 }
 
 export function TowerCard({ tower }: Props) {
-  const color     = statusToColor(tower.status)
-  const isCrit    = tower.status === 'critical'
-  const isWarn    = tower.status === 'warning'
+  const { _setTowers } = useGridStore()
+  const [loading, setLoading] = useState(false)
+
+  const color  = statusToColor(tower.status)
+  const isCrit = tower.status === 'critical'
+  const isWarn = tower.status === 'warning'
+
+  const toggleSpike = async () => {
+    setLoading(true)
+    try {
+      const newTfr = tower.tfr_ohm > 15 ? 5.2 : 26.8
+      await api.mockTowerTFR(tower.id, newTfr)
+      const res = await api.getTerraShield()
+      _setTowers(res.towers)
+    } catch (e) {
+      console.error('Failed to mock TFR', e)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
-    <div className={`flex flex-col items-center gap-1.5 p-2 rounded-lg border transition-all duration-300
-      ${isCrit ? 'border-fault-critical/40 bg-fault-critical/5 shadow-glow-red' :
-        isWarn  ? 'border-fault-warning/30 bg-fault-warning/5' :
-                  'border-white/5 bg-navy-800/50'}`}
+    <button
+      onClick={toggleSpike}
+      disabled={loading}
+      title="Click to simulate grounding degradation (TFR Spike)"
+      className={`flex flex-col items-center gap-1.5 p-2 rounded-lg border transition-all duration-300 hover:border-electric/50 active:scale-95 cursor-pointer
+        ${isCrit ? 'border-fault-critical/40 bg-fault-critical/5 shadow-glow-red' :
+          isWarn  ? 'border-fault-warning/30 bg-fault-warning/5' :
+                    'border-white/5 bg-navy-800/50'}`}
     >
       {/* Status ring */}
       <div
@@ -31,9 +55,9 @@ export function TowerCard({ tower }: Props) {
           {tower.tfr_ohm.toFixed(1)} Ω
         </p>
         {tower.ert_anomaly && (
-          <p className="text-[8px] text-fault-warning font-mono">ERT!</p>
+          <p className="text-[8px] text-fault-warning font-mono">ERT ANOMALY</p>
         )}
       </div>
-    </div>
+    </button>
   )
 }

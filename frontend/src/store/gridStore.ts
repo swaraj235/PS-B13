@@ -39,6 +39,7 @@ interface GridStore {
   // Complaints
   complaints:      ComplaintResponse[]
   submitComplaint: (req: ComplaintRequest) => Promise<void>
+  loadComplaints:  () => Promise<void>
 
   // WebSocket
   wsConnected: boolean
@@ -59,6 +60,7 @@ interface GridStore {
 
   // Demo
   injectFault: (sectionId: number, faultType: FaultTypeKey) => Promise<void>
+  resetFault:  () => Promise<void>
 }
 
 export const useGridStore = create<GridStore>((set, get) => ({
@@ -85,17 +87,34 @@ export const useGridStore = create<GridStore>((set, get) => ({
   },
 
   loadExplanation: async (sectionId) => {
-    const data = await api.getExplain(sectionId)
-    set({ explanation: data })
+    try {
+      const data = await api.getExplain(sectionId)
+      set({ explanation: data })
+    } catch (e) {
+      console.error('Failed to load explanation', e)
+    }
   },
 
   loadSwitchingGuide: async (sectionId) => {
-    const data = await api.getSwitchingGuide(sectionId)
-    set({
-      switchSteps:      data.steps,
-      affectedVillages: data.affected_villages,
-      estimatedRestoreMin: data.estimated_restore_time_min,
-    })
+    try {
+      const data = await api.getSwitchingGuide(sectionId)
+      set({
+        switchSteps:      data.steps,
+        affectedVillages: data.affected_villages,
+        estimatedRestoreMin: data.estimated_restore_time_min,
+      })
+    } catch (e) {
+      console.error('Failed to load switching guide', e)
+    }
+  },
+
+  loadComplaints: async () => {
+    try {
+      const data = await api.getComplaints()
+      set({ complaints: data.complaints || [] })
+    } catch (e) {
+      console.error('Failed to load complaints', e)
+    }
   },
 
   submitComplaint: async (req) => {
@@ -105,9 +124,29 @@ export const useGridStore = create<GridStore>((set, get) => ({
 
   injectFault: async (sectionId, faultType) => {
     await api.injectFault(sectionId, faultType)
-    set({ selectedSectionId: sectionId })
+    set(s => ({
+      selectedSectionId: sectionId,
+      sections: s.sections.map(sec => sec.id === sectionId ? { ...sec, status: 'critical' as const, fault_probability: 0.942 } : sec)
+    }))
     get().loadExplanation(sectionId)
     get().loadSwitchingGuide(sectionId)
+  },
+
+  resetFault: async () => {
+    await api.resetFault()
+    try {
+      const localize = await api.getFaultLocalize()
+      set({
+        sections: localize.sections,
+        activeAlert: null,
+        alerts: [],
+        switchSteps: [],
+        affectedVillages: [],
+        estimatedRestoreMin: 0
+      })
+    } catch (e) {
+      console.error('Failed to reset fault', e)
+    }
   },
 
   // Internal setters
@@ -130,10 +169,14 @@ export const useGridStore = create<GridStore>((set, get) => ({
     const newSelected = a.section_id
     get().loadExplanation(newSelected)
     get().loadSwitchingGuide(newSelected)
+    const updatedSections = s.sections.map(sec =>
+      sec.id === newSelected ? { ...sec, status: 'critical' as const, fault_probability: 0.942 } : sec
+    )
     return {
       activeAlert: a,
       alerts:      [a, ...s.alerts].slice(0, MAX_ALERTS),
       selectedSectionId: newSelected,
+      sections:    updatedSections,
     }
   }),
 

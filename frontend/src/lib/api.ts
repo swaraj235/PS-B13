@@ -41,12 +41,14 @@ export const api = {
   getFaultLocalize:  (): Promise<LocalizeResponse>      => get('/api/fault/localize'),
   getFaultClassify:  (sectionId: number): Promise<ClassifyResponse>  => get(`/api/fault/classify?section_id=${sectionId}`),
   injectFault:       (sectionId: number, faultType: FaultTypeKey)    => post('/api/fault/inject', { section_id: sectionId, fault_type: faultType }),
+  resetFault:        () => post('/api/fault/reset', {}),
 
   // SHAP explanation
   getExplain:        (sectionId: number): Promise<ExplainResponse>   => get(`/api/explain?section_id=${sectionId}`),
 
   // TerraShield
   getTerraShield:    (): Promise<TerraShieldResponse>   => get('/api/terrashield/status'),
+  mockTowerTFR:      (towerId: string, tfrOhm: number) => post('/api/terrashield/mock', { tower_id: towerId, tfr_ohm: tfrOhm }),
 
   // GIS
   getFaultOverlay:   (): Promise<unknown>               => get('/api/gis/fault-overlay'),

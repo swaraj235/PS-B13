@@ -1,35 +1,36 @@
 import { useState } from 'react'
-import { CheckCircle2, Loader2, Circle, ListChecks, MapPin, Zap, AlertTriangle, Users } from 'lucide-react'
+import { CheckCircle2, Loader2, Circle, ListChecks, MapPin, Zap, Users } from 'lucide-react'
 import { useGridStore } from '../../store/gridStore'
+import { SECTION_NAMES } from '../../lib/constants'
 
 // Comprehensive sub-area mapping per feeder section
 const SECTION_AREAS: Record<number, { name: string; villages: string[]; consumers: string; criticalLoad: string }> = {
   1: {
-    name: 'Section 1 (Primary Substation Outlet)',
+    name: 'Zone 1 (Kothrud Substation)',
     villages: ['Kothrud Central', 'Karve Nagar', 'Warje Malwadi', 'Erandwane'],
     consumers: '14,200',
     criticalLoad: 'Sahyadri Hospital, Karve Rd Metro Stn'
   },
   2: {
-    name: 'Section 2 (Mid-Feeder Branch A)',
+    name: 'Zone 2 (Paud Road Substation)',
     villages: ['Paud Road', 'Ideal Colony', 'Bavdhan Khurd', 'Bhugaon'],
     consumers: '11,800',
     criticalLoad: 'MIT Campus, Water Treatment Plant'
   },
   3: {
-    name: 'Section 3 (Mid-Feeder Branch B)',
+    name: 'Zone 3 (Kondhwa Substation)',
     villages: ['Kondhwa Budruk', 'Kondhwa Khurd', 'Undri', 'Pisoli', 'NIBM Rd'],
     consumers: '16,500',
     criticalLoad: 'Kondhwa Fire Stn, Ruby Hall Clinic'
   },
   4: {
-    name: 'Section 4 (Industrial & Commercial Link)',
-    villages: ['Katraj-Kondhwa Bypass', 'Yeolewadi', 'Saswad Road', 'Handewadi'],
-    consumers: '9,400',
-    criticalLoad: 'Hadapsar Industrial Zone B'
+    name: 'Zone 4 (Hadapsar Industrial)',
+    villages: ['Hadapsar', 'Magarpatta', 'Amanora', 'Mundhwa Industrial'],
+    consumers: '19,400',
+    criticalLoad: 'Hadapsar Industrial Park, Noble Hospital'
   },
   5: {
-    name: 'Section 5 (Feeder End-Node / Tie-Point)',
+    name: 'Zone 5 (Swargate Substation)',
     villages: ['Bhavani Peth', 'Camp Market', 'Parvati Hill', 'Swargate Terminal'],
     consumers: '8,100',
     criticalLoad: 'MSEDCL Regional Switching Sub'
@@ -41,6 +42,7 @@ export function SwitchingGuide() {
   const [completedSteps, setCompletedSteps] = useState<Record<number, boolean>>({})
 
   const activeSectionInfo = SECTION_AREAS[selectedSectionId] || SECTION_AREAS[1]
+  const zoneInfo = SECTION_NAMES[selectedSectionId] || { title: `Zone ${selectedSectionId}` }
   const currentSection = sections.find(s => s.id === selectedSectionId)
   const isFaulted = currentSection?.status === 'critical' || currentSection?.status === 'warning' || switchSteps.length > 0
 
@@ -62,11 +64,11 @@ export function SwitchingGuide() {
       <div className="card-header justify-between">
         <div className="flex items-center gap-2">
           <ListChecks className="w-4 h-4 text-electric" />
-          <span className="text-white font-semibold">Restoration & Impact Guide — SEC {selectedSectionId}</span>
+          <span className="text-white font-semibold">Power Restoration & Recovery Plan — {zoneInfo.title}</span>
         </div>
         {isFaulted && estimatedRestoreMin > 0 && (
           <span className="text-xs text-electric font-mono font-bold px-2 py-0.5 rounded bg-electric/10 border border-electric/20">
-            EST: ~{estimatedRestoreMin} MIN
+            EST. RECOVERY: ~{estimatedRestoreMin} MIN
           </span>
         )}
       </div>

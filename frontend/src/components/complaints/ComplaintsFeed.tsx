@@ -6,12 +6,11 @@ import { api } from '../../lib/api'
 
 // Village → section descriptions for the form helper
 const KNOWN_AREAS: Record<string, number> = {
-  'Kondhwa Budruk': 3, 'Kondhwa Khurd': 3, 'Undri': 3, 'Pisoli': 3,
-  'Vadgaon': 3, 'Bavdhan': 3, 'Pirangut': 3,
-  'Kothrud': 1, 'Warje': 1, 'Karve Nagar': 1,
-  'Paud': 2, 'Bhugaon': 2,
-  'Mulshi': 4, 'Lavad': 4,
-  'Tamhini': 5, 'Donaje': 5,
+  'Kondhwa Budruk': 3, 'Kondhwa Khurd': 3, 'Undri': 3, 'Pisoli': 3, 'NIBM Rd': 3,
+  'Kothrud Central': 1, 'Warje Malwadi': 1, 'Karve Nagar': 1, 'Erandwane': 1,
+  'Paud Road': 2, 'Ideal Colony': 2, 'Bavdhan Khurd': 2, 'Bhugaon': 2,
+  'Hadapsar': 4, 'Magarpatta': 4, 'Amanora': 4, 'Mundhwa': 4,
+  'Swargate Terminal': 5, 'Camp Market': 5, 'Parvati Hill': 5, 'Shivajinagar': 5,
 }
 
 export function ComplaintsFeed() {
